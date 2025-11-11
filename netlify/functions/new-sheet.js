@@ -168,7 +168,7 @@ export const handler = async (event) => {
                   textFormat: { bold: true },
                 },
               },
-              fields: "userEnteredFormat.textFormat.bold",
+              fields: "userEnteredFormat(textFormat)",
             },
           },
         ],
