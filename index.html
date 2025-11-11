@@ -2,12 +2,18 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Top Investors Lists — Aerospace</title>
+    <title>Top 3 Aerospace Seed Investors</title>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
       body { font-family: system-ui, Arial; padding: 24px; max-width: 720px; margin: 0 auto; background: #000; color: #fff; }
       button { padding: 10px 14px; border: 1px solid #dadce0; border-radius: 6px; cursor: pointer; }
       .note { color: #fff; }
+      h1 { font-size: 32px; margin: 0 0 16px 0; }
+      .records { display: flex; flex-direction: column; gap: 12px; margin: 16px 0 20px 0; }
+      .record { display: flex; align-items: flex-start; gap: 16px; border: 1px solid #222; background: #0c0c0c; padding: 12px; border-radius: 8px; }
+      .record-info { flex: 1; }
+      .record-info p { margin: 0 0 6px 0; }
+      .record-image img { width: 120px; height: 120px; object-fit: cover; border-radius: 6px; background: #111; border: 1px solid #222; }
     </style>
   </head>
   <body
@@ -15,7 +21,8 @@
     data-table="tblOqtOhWAfA9fWaR"
     data-view="viwsSmHXp0rEeut2R">
 
-    <h2>Top Investors Lists — Aerospace</h2>
+    <h1>Top 3 Aerospace Seed Investors</h1>
+    <div id="records" class="records"></div>
     <p class="note">Click the button to create a Google Sheet in <em>your</em> Drive from the live Airtable view.</p>
     <button id="copyBtn">Copy to Google Sheets</button>
 
@@ -98,6 +105,73 @@
           btn.textContent = originalText;
         }
       });
+
+      async function loadRecords() {
+        const container = document.getElementById("records");
+        const { base, table, view } = document.body.dataset;
+        try {
+          const url = `/.netlify/functions/list-records?base=${encodeURIComponent(base)}&table=${encodeURIComponent(table)}&view=${encodeURIComponent(view)}`;
+          const res = await fetch(url);
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || "Failed to load records");
+
+          (data.records || []).forEach(r => {
+            const wrap = document.createElement("div");
+            wrap.className = "record";
+
+            const info = document.createElement("div");
+            info.className = "record-info";
+
+            const name = document.createElement("p");
+            name.textContent = r.contactName || "";
+            info.appendChild(name);
+
+            const fundLine = document.createElement("p");
+            const fundLink = document.createElement("a");
+            fundLink.href = r.link || "#";
+            fundLink.target = "_blank";
+            fundLink.rel = "noopener";
+            fundLink.textContent = r.fund || "Fund";
+            fundLine.appendChild(fundLink);
+            const after = document.createTextNode(r.link ? ` linked to ${r.link}` : "");
+            fundLine.appendChild(after);
+            info.appendChild(fundLine);
+
+            const check = document.createElement("p");
+            check.textContent = `Check Size: ${r.checkSize || ""}`;
+            info.appendChild(check);
+
+            const focus = document.createElement("p");
+            focus.textContent = `Focus: ${r.focus || ""}`;
+            info.appendChild(focus);
+
+            const advice = document.createElement("p");
+            advice.textContent = `Pitch Advice: ${r.pitchAdvice || ""}`;
+            info.appendChild(advice);
+
+            wrap.appendChild(info);
+
+            if (r.imageUrl) {
+              const imgWrap = document.createElement("div");
+              imgWrap.className = "record-image";
+              const img = document.createElement("img");
+              img.src = r.imageUrl;
+              img.alt = r.contactName ? `${r.contactName} image` : "Investor image";
+              imgWrap.appendChild(img);
+              wrap.appendChild(imgWrap);
+            }
+
+            container.appendChild(wrap);
+          });
+        } catch (e) {
+          const error = document.createElement("p");
+          error.className = "note";
+          error.textContent = "Failed to load records.";
+          container.appendChild(error);
+        }
+      }
+
+      loadRecords();
     </script>
   </body>
 </html>
