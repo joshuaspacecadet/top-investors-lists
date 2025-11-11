@@ -68,18 +68,41 @@ export const handler = async (event) => {
       url = j.offset ? `${firstUrl}&offset=${encodeURIComponent(j.offset)}` : null;
     }
   
-    const fieldSet = new Set();
-    records.forEach(r => Object.keys(r.fields || {}).forEach(k => fieldSet.add(k)));
-    const headerList = Array.from(fieldSet);
-    const rows = records.map(r => headerList.map(h => {
-      const v = r.fields?.[h];
-      if (v == null) return "";
-      if (Array.isArray(v)) return v.join(", ");
-      if (typeof v === "object") return JSON.stringify(v);
-      return v;
-    }));
+    // Desired sheet columns in final order including two custom columns
+    const desiredHeaders = [
+      "Fund",
+      "Intro Path",          // custom column (not in Airtable)
+      "Link",
+      "Focus",
+      "Pitch Advice",
+      "Recent Fund",
+      "Fund Size",
+      "Check Size",
+      "Contact Name",
+      "Contact LinkedIn",
+      "Portfolio Examples",
+      "Industries",
+      "Stage",
+      "Notes"                // custom column (not in Airtable)
+    ];
   
-    return { headers: headerList, rows };
+    function formatValue(value) {
+      if (value == null) return "";
+      if (Array.isArray(value)) return value.join(", ");
+      if (typeof value === "object") return JSON.stringify(value);
+      return value;
+    }
+  
+    const rows = records.map(record => {
+      const f = record.fields || {};
+      return desiredHeaders.map(h => {
+        // Custom columns are blank by default
+        if (h === "Intro Path" || h === "Notes") return "";
+        return formatValue(f[h]);
+      });
+    });
+  
+    return { headers: desiredHeaders, rows };
   }
   
   async function createEmptySheet({ googleToken, name }) {
