@@ -66,18 +66,11 @@
       }
 
       document.getElementById("copyBtn").addEventListener("click", async () => {
-        // open a blank tab right away (allowed)
-        const popup = window.open("", "_blank");
-        // show a lightweight loader in the popup so it isn't blank
-        if (popup && popup.document) {
-          try {
-            popup.document.write(`<!doctype html><html><head><title>Creating Sheet…</title></head><body style="font-family: system-ui, Arial; background:#000; color:#fff; padding:24px;">
-<h3 style="margin:0 0 8px 0;">Creating your Google Sheet…</h3>
-<p style="margin:0;">This may take a few seconds.</p>
-</body></html>`);
-            popup.document.close();
-          } catch (_) {}
-        }
+        // use same-tab navigation to avoid popup blockers
+        const btn = document.getElementById("copyBtn");
+        const originalText = btn.textContent;
+        btn.disabled = true;
+        btn.textContent = "Creating Sheet…";
         try {
           // run OAuth + fetch as before
           const accessToken = await getAccessToken();
@@ -98,16 +91,12 @@
           });
           const data = await res.json();
           if (!res.ok) throw new Error(data.error || "Failed to create Sheet");
-          // redirect the already-open tab to the new Sheet
-          if (popup) {
-            popup.location.href = data.url;
-          } else {
-            // if popup was blocked, try opening now, else fall back to same-tab
-            window.open(data.url, "_blank") || (window.location.href = data.url);
-          }
+          // navigate current tab to the new Sheet (not blocked by popup blockers)
+          window.location.href = data.url;
         } catch (e) {
-          if (popup) popup.close(); // tidy up if something failed
           alert("Copy failed: " + (e.message || e));
+          btn.disabled = false;
+          btn.textContent = originalText;
         }
       });
     </script>
