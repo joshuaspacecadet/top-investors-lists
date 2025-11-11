@@ -1,0 +1,168 @@
+:root {
+  --accent: #ff6a00;
+  --brand-orange: #F37021;
+  --header-h: 64px;
+  --rail-min: 120px;
+  --rail-max: 220px;
+  --rail-w: 15vw;
+  --rail: clamp(var(--rail-min), var(--rail-w), var(--rail-max));
+}
+
+/* Base */
+html, body {
+  background: #000;
+  color: #fff;
+}
+body {
+  font-family: Inter, system-ui, Arial;
+  margin: 0;
+}
+
+/* Fixed left rail */
+.left-rail {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: var(--rail);
+  height: 100vh;
+  background: linear-gradient(180deg, rgba(243,112,33,0.95), rgba(243,112,33,0.85));
+  border-right: 1px solid rgba(255,255,255,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.rail-text {
+  font-family: "Chakra Petch", Inter, system-ui, Arial;
+  color: #0a0a0a;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  transform: rotate(-90deg);
+  white-space: nowrap;
+}
+.rail-icon {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #110a07;
+  opacity: 0.6;
+  font-size: 18px;
+}
+.rail-icon--top { top: 10px; }
+.rail-icon--bottom { bottom: 10px; }
+
+/* Fixed top header */
+.site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--header-h);
+  z-index: 1100;
+  background: rgba(0,0,0,0.85);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid #121212;
+  display: flex;
+  align-items: center;
+}
+.site-header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  margin-left: var(--rail);
+  width: calc(100% - var(--rail));
+}
+.brand-home {
+  color: #fff;
+  text-decoration: none;
+  font-size: 20px;
+}
+.top-nav {
+  display: flex;
+  gap: 24px;
+}
+.top-nav a {
+  color: #e6e6e6;
+  text-decoration: none;
+  font-size: 12px;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  padding: 8px 10px;
+  border-radius: 6px;
+}
+.top-nav a:hover {
+  background: #0f0f0f;
+}
+
+/* Content layout */
+.content {
+  padding: calc(var(--header-h) + 24px) 40px 40px 40px;
+  margin-left: var(--rail);
+  max-width: 1040px;
+}
+
+.note { color: #fff; margin: 20px 0 8px 0; line-height: 1.6; }
+#copyBtn { margin: 6px 0 32px 0; padding: 12px 16px; border: 1px solid #2a2a2a; background: #0d0d0d; color: #fff; border-radius: 8px; cursor: pointer; }
+
+h1 {
+  font-family: "Chakra Petch", Inter, system-ui, Arial;
+  font-size: 52px;
+  margin: 0 0 28px 0;
+  letter-spacing: 0.5px;
+}
+
+.hero {
+  position: relative;
+  margin: 0 0 32px 0;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid #141414;
+}
+.hero img {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  filter: brightness(0.6) contrast(1.05);
+  display: block;
+}
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  padding: 24px 28px;
+}
+.hero-copy { max-width: 80ch; font-size: 20px; line-height: 1.6; color: #f3f3f3; }
+
+.records { display: flex; flex-direction: column; gap: 28px; margin: 28px 0 36px 0; scroll-margin-top: 84px; }
+.record { display: grid; grid-template-columns: 1fr 360px; gap: 32px; border: 1px solid #1a1a1a; background: #070707; padding: 28px; border-radius: 14px; }
+.record-info { display: flex; flex-direction: column; gap: 12px; }
+.record-index { font-family: "Chakra Petch", Inter, system-ui, Arial; font-size: 40px; color: var(--accent); line-height: 1; }
+.record-name { font-family: "Chakra Petch", Inter, system-ui, Arial; font-size: 44px; line-height: 1.1; letter-spacing: 0.5px; text-transform: uppercase; }
+.record-fund { font-size: 22px; letter-spacing: 2px; text-transform: uppercase; color: #e6e6e6; margin-top: 10px; }
+.record-fund a { color: inherit; text-decoration: none; border-bottom: 1px solid #333; }
+.kv { margin-top: 16px; }
+.kv-label { font-weight: 600; margin: 0 0 6px 0; letter-spacing: 0.2px; }
+.kv-value { margin: 0; color: #e2e2e2; line-height: 1.7; }
+.record-image { display: flex; justify-content: flex-end; }
+.record-image img { width: 360px; height: 360px; object-fit: cover; border-radius: 10px; background: #111; border: 1px solid #1f1f1f; }
+
+/* Responsive */
+@media (max-width: 1100px) {
+  :root { --rail-min: 100px; --rail-max: 180px; }
+}
+@media (max-width: 980px) {
+  :root { --rail: 0px; }
+  .left-rail { display: none; }
+  .site-header__inner { margin-left: 0; width: 100%; }
+  .content { margin-left: 0; padding: calc(var(--header-h) + 16px) 28px 28px 28px; }
+  .record { grid-template-columns: 1fr; }
+  .record-image { justify-content: flex-start; }
+  .record-image img { width: 100%; max-width: 520px; height: auto; max-height: 360px; }
+  h1 { font-size: 44px; margin-bottom: 24px; }
+  .hero img { height: 260px; }
+}
+
+
