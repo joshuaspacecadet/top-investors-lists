@@ -12,7 +12,7 @@
       .note { color: #fff; margin: 20px 0 8px 0; line-height: 1.6; }
       #copyBtn { margin: 6px 0 32px 0; }
       h1 { font-family: "Chakra Petch", Inter, system-ui, Arial; font-size: 52px; margin: 0 0 28px 0; letter-spacing: 0.5px; }
-      .records { display: flex; flex-direction: column; gap: 28px; margin: 28px 0 36px 0; }
+      .records { display: flex; flex-direction: column; gap: 28px; margin: 28px 0 36px 0; scroll-margin-top: 84px; }
       .record { display: grid; grid-template-columns: 1fr 360px; gap: 32px; border: 1px solid #1a1a1a; background: #070707; padding: 28px; border-radius: 14px; }
       .record-info { display: flex; flex-direction: column; gap: 12px; }
       .record-index { font-family: "Chakra Petch", Inter, system-ui, Arial; font-size: 40px; color: var(--accent); line-height: 1; }
@@ -28,9 +28,25 @@
       .hero img { width: 100%; height: 300px; object-fit: cover; filter: brightness(0.6) contrast(1.05); display: block; }
       .hero-overlay { position: absolute; inset: 0; display: flex; align-items: center; padding: 24px 28px; }
       .hero-copy { max-width: 80ch; font-size: 20px; line-height: 1.6; color: #f3f3f3; }
+      /* Sticky top navigation */
+      .site-header { position: sticky; top: 0; z-index: 100; background: rgba(0,0,0,0.6); backdrop-filter: blur(6px); border-bottom: 1px solid #121212; margin: -40px -40px 24px -40px; padding: 14px 40px; display: flex; align-items: center; justify-content: space-between; }
+      .brand { font-family: "Chakra Petch", Inter, system-ui, Arial; letter-spacing: 1px; font-size: 20px; }
+      .top-nav { display: flex; gap: 16px; }
+      .top-nav a { color: #e6e6e6; text-decoration: none; font-size: 14px; padding: 6px 8px; border-radius: 6px; }
+      .top-nav a:hover { background: #0f0f0f; }
+      /* Sticky left sidebar layout */
+      .page { display: grid; grid-template-columns: 240px 1fr; gap: 32px; }
+      .sidebar { position: sticky; top: 72px; height: fit-content; align-self: start; }
+      .toc-title { font-size: 12px; color: #bdbdbd; text-transform: uppercase; letter-spacing: 1.2px; margin: 6px 0 10px 0; }
+      .toc { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
+      .toc a { color: #ddd; text-decoration: none; font-size: 14px; line-height: 1.3; display: inline-block; padding: 6px 8px; border-radius: 6px; }
+      .toc a:hover { background: #0e0e0e; color: #fff; }
 
       @media (max-width: 980px) {
         body { padding: 28px; }
+        .site-header { margin: -28px -28px 20px -28px; padding: 12px 28px; }
+        .page { grid-template-columns: 1fr; }
+        .sidebar { position: static; order: 2; }
         .record { grid-template-columns: 1fr; }
         .record-image { justify-content: flex-start; }
         .record-image img { width: 100%; max-width: 520px; height: auto; max-height: 360px; }
@@ -44,17 +60,36 @@
     data-table="tblOqtOhWAfA9fWaR"
     data-view="viwsSmHXp0rEeut2R">
 
-    <div class="hero">
-      <img src="https://aerospace.org/sites/default/files/styles/hero_small/public/2019-05/stp3.jpg?itok=LotgvROx" alt="Aerospace launch hero" />
-      <div class="hero-overlay">
-        <p class="hero-copy">Identifying appropriate investors is hard. Here's a curated list of Seed investors (in alphabetical order) who actually lead rounds.</p>
-      </div>
-    </div>
+    <header class="site-header">
+      <div class="brand">Spacecadet: A Venture Collective</div>
+      <nav class="top-nav">
+        <a href="#">Home</a>
+        <a href="#">Marketing</a>
+        <a href="#">Mission</a>
+        <a href="#">Crew</a>
+        <a href="#">Portfolio</a>
+      </nav>
+    </header>
 
-    <h1>Top 3 Aerospace Seed Investors</h1>
-    <div id="records" class="records"></div>
-    <p class="note">Click the button to create a Google Sheet in <em>your</em> Drive from the live Airtable view.</p>
-    <button id="copyBtn">Copy to Google Sheets</button>
+    <div class="page">
+      <aside class="sidebar">
+        <div class="toc-title">Investors</div>
+        <ul id="toc" class="toc"></ul>
+      </aside>
+      <main class="content">
+        <div class="hero">
+          <img src="https://aerospace.org/sites/default/files/styles/hero_small/public/2019-05/stp3.jpg?itok=LotgvROx" alt="Aerospace launch hero" />
+          <div class="hero-overlay">
+            <p class="hero-copy">Identifying appropriate investors is hard. Here's a curated list of Seed investors (in alphabetical order) who actually lead rounds.</p>
+          </div>
+        </div>
+
+        <h1>Top 3 Aerospace Seed Investors</h1>
+        <div id="records" class="records"></div>
+        <p class="note">Click the button to create a Google Sheet in <em>your</em> Drive from the live Airtable view.</p>
+        <button id="copyBtn">Copy to Google Sheets</button>
+      </main>
+    </div>
 
     <script>
       // PUT YOUR CLIENT ID HERE (from Google Cloud Console)
@@ -145,9 +180,11 @@
           const data = await res.json();
           if (!res.ok) throw new Error(data.error || "Failed to load records");
 
+          const toc = document.getElementById("toc");
           (data.records || []).forEach((r, i) => {
             const wrap = document.createElement("div");
             wrap.className = "record";
+            wrap.id = `rec-${i+1}`;
 
             const info = document.createElement("div");
             info.className = "record-info";
@@ -221,6 +258,14 @@
             }
 
             container.appendChild(wrap);
+
+            // TOC entry
+            const li = document.createElement("li");
+            const a = document.createElement("a");
+            a.href = `#rec-${i+1}`;
+            a.textContent = r.contactName || r.fund || `Investor ${i+1}`;
+            li.appendChild(a);
+            toc.appendChild(li);
           });
         } catch (e) {
           const error = document.createElement("p");
