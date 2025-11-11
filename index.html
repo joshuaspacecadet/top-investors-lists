@@ -1,0 +1,80 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Top Investors Lists — Aerospace</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+      body { font-family: system-ui, Arial; padding: 24px; max-width: 720px; margin: 0 auto; }
+      button { padding: 10px 14px; border: 1px solid #dadce0; border-radius: 6px; cursor: pointer; }
+      .note { color: #555; }
+    </style>
+  </head>
+  <body
+    data-base="appNWh4J1hBABWC6J"
+    data-table="tblOqtOhWAfA9fWaR"
+    data-view="viwsSmHXp0rEeut2R">
+
+    <h2>Top Investors Lists — Aerospace</h2>
+    <p class="note">Click the button to create a Google Sheet in <em>your</em> Drive from the live Airtable view.</p>
+    <button id="copyBtn">Copy to Google Sheets</button>
+
+    <script>
+      // PUT YOUR CLIENT ID HERE (from Google Cloud Console)
+      const GOOGLE_CLIENT_ID = "YOUR_GOOGLE_OAUTH_CLIENT_ID.apps.googleusercontent.com";
+
+      // OAuth scopes needed to create + write a Sheet in the user's Drive
+      const SCOPES = [
+        "https://www.googleapis.com/auth/drive.file",
+        "https://www.googleapis.com/auth/spreadsheets"
+      ].join(" ");
+
+      function getAccessToken() {
+        return new Promise((resolve, reject) => {
+          const client = google.accounts.oauth2.initTokenClient({
+            client_id: GOOGLE_CLIENT_ID,
+            scope: SCOPES,
+            callback: resp => {
+              if (resp && resp.access_token) resolve(resp.access_token);
+              else reject(new Error("No access token"));
+            }
+          });
+          client.requestAccessToken();
+        });
+      }
+
+      async function createSheet() {
+        const accessToken = await getAccessToken();
+
+        const el = document.body.dataset;
+        const payload = {
+          base:  el.base,
+          table: el.table,
+          view:  el.view,
+          namePrefix: "Top Investors Lists — Aerospace"
+        };
+
+        const res = await fetch("/.netlify/functions/new-sheet", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${accessToken}`
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Failed to create Sheet");
+        window.open(data.url, "_blank");
+      }
+
+      document.getElementById("copyBtn").addEventListener("click", async () => {
+        try {
+          await createSheet();
+        } catch (e) {
+          alert("Copy failed: " + (e.message || e));
+        }
+      });
+    </script>
+  </body>
+</html>
