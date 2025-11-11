@@ -20,16 +20,17 @@ export const handler = async (event) => {
       const { base, table, view, namePrefix } = JSON.parse(event.body || "{}");
       if (!base || !table || !view) return json(400, { error: "Missing base or table or view" });
   
-      const at = await fetchAirtable({ base, table, view, token: process.env.AIRTABLE_TOKEN });
+  const at = await fetchAirtable({ base, table, view, token: process.env.AIRTABLE_TOKEN });
   
-      const sheetId = await createEmptySheet({
+  const { spreadsheetId, sheetId } = await createEmptySheet({
         googleToken,
         name: `${namePrefix || "Airtable Export"} — ${new Date().toISOString().slice(0,10)}`
       });
   
-      await writeValues({ googleToken, sheetId, headers: at.headers, rows: at.rows });
+  await writeValues({ googleToken, spreadsheetId, headers: at.headers, rows: at.rows });
+  await formatHeaderRow({ googleToken, spreadsheetId, sheetId, headerCount: at.headers.length });
   
-      return json(200, { url: `https://docs.google.com/spreadsheets/d/${sheetId}/edit` });
+  return json(200, { url: `https://docs.google.com/spreadsheets/d/${spreadsheetId}/edit` });
     } catch (e) {
       return json(500, { error: e.message || "Server error" });
     }
@@ -116,11 +117,14 @@ export const handler = async (event) => {
     });
     if (!resp.ok) throw new Error(`Sheets create failed: ${await resp.text()}`);
     const json = await resp.json();
-    return json.spreadsheetId; // json.spreadsheetUrl also exists
+    return {
+      spreadsheetId: json.spreadsheetId,
+      sheetId: json.sheets && json.sheets[0] && json.sheets[0].properties ? json.sheets[0].properties.sheetId : undefined,
+    };
   }
   
-  async function writeValues({ googleToken, sheetId, headers, rows }) {
-    const resp = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/A1?valueInputOption=RAW`, {
+  async function writeValues({ googleToken, spreadsheetId, headers, rows }) {
+    const resp = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/A1?valueInputOption=RAW`, {
       method: "PUT",
       headers: {
         Authorization: `Bearer ${googleToken}`,
@@ -129,5 +133,47 @@ export const handler = async (event) => {
       body: JSON.stringify({ values: [headers, ...rows] }),
     });
     if (!resp.ok) throw new Error(`Sheets write failed: ${await resp.text()}`);
+  }
+  
+  async function formatHeaderRow({ googleToken, spreadsheetId, sheetId, headerCount }) {
+    if (!sheetId) return; // safety: if we couldn't detect sheetId, skip formatting
+    const resp = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}:batchUpdate`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${googleToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        requests: [
+          {
+            updateSheetProperties: {
+              properties: {
+                sheetId,
+                gridProperties: { frozenRowCount: 1 },
+              },
+              fields: "gridProperties.frozenRowCount",
+            },
+          },
+          {
+            repeatCell: {
+              range: {
+                sheetId,
+                startRowIndex: 0,
+                endRowIndex: 1,
+                startColumnIndex: 0,
+                endColumnIndex: headerCount,
+              },
+              cell: {
+                userEnteredFormat: {
+                  textFormat: { bold: true },
+                },
+              },
+              fields: "userEnteredFormat.textFormat.bold",
+            },
+          },
+        ],
+      }),
+    });
+    if (!resp.ok) throw new Error(`Sheets format failed: ${await resp.text()}`);
   }
   
