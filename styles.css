@@ -2,9 +2,9 @@
   --accent: #ff6a00;
   --brand-orange: #FF5C00;
   --header-h: 64px;
-  --rail-min: 52px;
-  --rail-max: 72px;
-  --rail-w: 8vw;
+  --rail-min: 48px;
+  --rail-max: 68px;
+  --rail-w: 7vw;
   --rail: clamp(var(--rail-min), var(--rail-w), var(--rail-max));
 }
 
@@ -40,15 +40,16 @@ body {
   justify-content: center;
 }
 .rail-top img {
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  height: 36px;
 }
 .rail-body {
   background: var(--brand-orange);
   flex: 1 1 auto;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
+  padding-bottom: 64px;
   position: relative;
 }
 .rail-text {
@@ -60,7 +61,7 @@ body {
   writing-mode: vertical-rl;
   transform: rotate(180deg);
   white-space: nowrap;
-  font-size: 13px;
+  font-size: 15px;
 }
 .rail-strong { font-weight: 700; }
 .rail-divider {
@@ -74,10 +75,10 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  border-bottom-right-radius: 10px;
+  border-bottom-right-radius: 0;
 }
 .rail-bottom img {
-  height: 48px;
+  height: 40px;
   width: auto;
 }
 
