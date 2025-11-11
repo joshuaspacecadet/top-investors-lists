@@ -24,10 +24,7 @@
       const GOOGLE_CLIENT_ID = "964428463207-81190lnabk68t0cbcgb5sbab5bss6tp1.apps.googleusercontent.com";
 
       // OAuth scopes needed to create + write a Sheet in the user's Drive
-      const SCOPES = [
-        "https://www.googleapis.com/auth/drive.file",
-        "https://www.googleapis.com/auth/spreadsheets"
-      ].join(" ");
+      const SCOPES = "https://www.googleapis.com/auth/spreadsheets";
 
       function getAccessToken() {
         return new Promise((resolve, reject) => {

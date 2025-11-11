@@ -83,20 +83,17 @@ export const handler = async (event) => {
   }
   
   async function createEmptySheet({ googleToken, name }) {
-    const resp = await fetch("https://www.googleapis.com/drive/v3/files", {
+    const resp = await fetch("https://sheets.googleapis.com/v4/spreadsheets", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${googleToken}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        name,
-        mimeType: "application/vnd.google-apps.spreadsheet",
-      }),
+      body: JSON.stringify({ properties: { title: name } }),
     });
-    if (!resp.ok) throw new Error(`Drive create failed: ${await resp.text()}`);
-    const file = await resp.json();
-    return file.id;
+    if (!resp.ok) throw new Error(`Sheets create failed: ${await resp.text()}`);
+    const json = await resp.json();
+    return json.spreadsheetId; // json.spreadsheetUrl also exists
   }
   
   async function writeValues({ googleToken, sheetId, headers, rows }) {
