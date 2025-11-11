@@ -66,8 +66,6 @@
       }
 
       document.getElementById("copyBtn").addEventListener("click", async () => {
-        // pre-open a new tab synchronously to avoid popup blockers
-        const popup = window.open("about:blank", "_blank", "noopener");
         const btn = document.getElementById("copyBtn");
         const originalText = btn.textContent;
         btn.disabled = true;
@@ -92,14 +90,8 @@
           });
           const data = await res.json();
           if (!res.ok) throw new Error(data.error || "Failed to create Sheet");
-          // navigate the pre-opened tab to the new Sheet
-          if (popup) {
-            popup.location.href = data.url;
-            try { popup.focus(); } catch (_) {}
-          } else {
-            // fallback if popup was blocked
-            window.open(data.url, "_blank") || (window.location.href = data.url);
-          }
+          // navigate current tab to the new Sheet
+          window.location.href = data.url;
         } catch (e) {
           alert("Copy failed: " + (e.message || e));
           btn.disabled = false;
