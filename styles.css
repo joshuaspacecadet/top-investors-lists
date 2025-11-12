@@ -46,7 +46,7 @@ body {
   display: flex;
   align-items: center;        /* center vertically within rail */
   justify-content: flex-end;  /* push along the rail toward bottom */
-  padding-bottom: 24px;       /* move text closer to globe */
+  padding-bottom: 6px;        /* move text closer to globe */
   position: relative;
 }
 .rail-text {
