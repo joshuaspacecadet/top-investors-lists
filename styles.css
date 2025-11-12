@@ -194,9 +194,9 @@ body {
 
 /* Content layout */
 .content {
-  padding: calc(var(--header-h) + 24px + 9px) 40px 40px 70px;
+  padding: calc(var(--header-h) + 24px + 9px) 0 40px 70px;
   margin-left: var(--rail);
-  max-width: 1040px;
+  max-width: calc(100vw - var(--rail) - 40px);
 }
 
 .note { color: #fff; margin: 20px 0 8px 0; line-height: 1.6; }
@@ -231,9 +231,10 @@ h1 {
   grid-template-columns: 1fr 1.5fr;
   gap: 32px;
   align-items: center;
-  margin-right: -40px;
+  margin-right: 0;
   margin-left: 30px;
-  width: calc(100% + 40px);
+  width: 100%;
+  padding-right: 40px;
 }
 .hero-content {
   padding: 0 40px 40px 130px;
@@ -282,7 +283,7 @@ h1 {
   margin-left: -32px;
 }
 
-.records { display: flex; flex-direction: column; gap: 28px; margin: 28px 0 36px 0; padding-left: 130px; scroll-margin-top: 84px; }
+.records { display: flex; flex-direction: column; gap: 28px; margin: 28px 0 36px 0; padding: 0 40px 0 130px; scroll-margin-top: 84px; }
 .record { display: grid; grid-template-columns: 1fr 360px; gap: 32px; border: 1px solid #1a1a1a; background: #070707; padding: 28px; border-radius: 14px; }
 .record-info { display: flex; flex-direction: column; gap: 12px; }
 .record-index { font-family: "NB Archtekt", Inter, system-ui, Arial; font-size: 40px; color: var(--accent); line-height: 1; }
