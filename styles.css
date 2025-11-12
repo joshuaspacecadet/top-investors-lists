@@ -67,8 +67,9 @@ body {
   border-top: 1px dashed #111;
   background: var(--brand-orange);
   display: block;             /* ensure visible */
-  margin-top: -5px;           /* move line up ~5px */
+  margin-top: 0;              /* reset */
   position: relative;
+  top: -5px;                  /* move line up ~5px explicitly */
   z-index: 2;                 /* paint above orange body if overlapping */
 }
 .rail-bottom {
