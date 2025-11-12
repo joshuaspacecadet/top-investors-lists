@@ -90,7 +90,7 @@ body {
 /* Fixed top header */
 .site-header {
   position: fixed;
-  top: 0;
+  top: 6px;
   left: 0;
   width: 100%;
   height: var(--header-h);
@@ -126,8 +126,9 @@ body {
   color: #d4d4d4;
   text-decoration: none;
   font-size: 15px; /* +3px larger */
-  letter-spacing: 1.6px;
+  letter-spacing: 0.8px;
   text-transform: uppercase;
+  font-weight: 700;
   padding: 8px 10px;
   border-radius: 6px;
 }
@@ -142,8 +143,9 @@ body {
   color: #d4d4d4;
   text-decoration: none;
   font-size: 15px;
-  letter-spacing: 1.6px;
+  letter-spacing: 0.8px;
   text-transform: uppercase;
+  font-weight: 700;
   padding: 8px 12px;
   border-radius: 9999px;
   display: flex;
@@ -153,8 +155,8 @@ body {
 .contact-link:hover { background: #0f0f0f; }
 
 .icon-circle {
-  width: 36px;
-  height: 36px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   background: #ffffff;
   display: grid;
@@ -171,7 +173,7 @@ body {
 
 /* Content layout */
 .content {
-  padding: calc(var(--header-h) + 24px) 40px 40px 40px;
+  padding: calc(var(--header-h) + 24px + 6px) 40px 40px 40px;
   margin-left: var(--rail);
   max-width: 1040px;
 }
@@ -230,7 +232,7 @@ h1 {
   :root { --rail: 0px; }
   .left-rail { display: none; }
   .site-header__inner { margin-left: 0; width: 100%; }
-  .content { margin-left: 0; padding: calc(var(--header-h) + 16px) 28px 28px 28px; }
+  .content { margin-left: 0; padding: calc(var(--header-h) + 16px + 6px) 28px 28px 28px; }
   .record { grid-template-columns: 1fr; }
   .record-image { justify-content: flex-start; }
   .record-image img { width: 100%; max-width: 520px; height: auto; max-height: 360px; }
