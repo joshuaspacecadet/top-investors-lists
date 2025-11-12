@@ -266,9 +266,10 @@ h1 {
   flex: 1;
   height: 1px;
   background: #ffffff;
+  margin-left: -32px;
 }
 
-.records { display: flex; flex-direction: column; gap: 28px; margin: 28px 0 36px 0; scroll-margin-top: 84px; }
+.records { display: flex; flex-direction: column; gap: 28px; margin: 28px 0 36px 0; padding-left: 130px; scroll-margin-top: 84px; }
 .record { display: grid; grid-template-columns: 1fr 360px; gap: 32px; border: 1px solid #1a1a1a; background: #070707; padding: 28px; border-radius: 14px; }
 .record-info { display: flex; flex-direction: column; gap: 12px; }
 .record-index { font-family: "NB Archtekt", Inter, system-ui, Arial; font-size: 40px; color: var(--accent); line-height: 1; }
@@ -308,6 +309,9 @@ h1 {
   }
   .hero-content {
     padding: 0 28px 28px 28px;
+  }
+  .records {
+    padding-left: 28px;
   }
   .hero-image img {
     min-height: 300px;
