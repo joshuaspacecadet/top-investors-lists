@@ -44,9 +44,9 @@ body {
   background: var(--brand-orange);
   flex: 1 1 auto;
   display: flex;
-  align-items: center;        /* center vertically within rail */
-  justify-content: flex-end;  /* push along the rail toward bottom */
-  padding-bottom: 6px;        /* move text closer to globe */
+  align-items: center;        /* center horizontally within rail */
+  justify-content: center;    /* center vertically within rail */
+  padding-bottom: 0;          /* no extra offset; pure center */
   position: relative;
 }
 .rail-text {
@@ -68,7 +68,7 @@ body {
 }
 .rail-bottom {
   background: var(--brand-orange);
-  padding: 10px 0 12px 0;
+  padding: 18px 0 26px 0;     /* add more vertical padding around globe */
   display: flex;
   align-items: center;
   justify-content: center;
