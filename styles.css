@@ -177,6 +177,16 @@ body {
   place-items: center;
   transition: background-color 0.2s ease-in-out;
 }
+.icon-circle img {
+  filter: brightness(0);
+  transition: filter 0.2s ease-in-out;
+}
+.contact-link:hover .icon-circle {
+  background: var(--brand-orange);
+}
+.contact-link:hover .icon-circle img {
+  filter: brightness(0);
+}
 .icon-circle svg {
   display: block;
 }
