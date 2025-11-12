@@ -65,11 +65,14 @@ body {
   height: 0;
   border-top: 1px dashed #111;
   background: var(--brand-orange);
-  margin-top: -5px;           /* nudge dashed line upward ~5px */
+  display: block;             /* ensure visible */
+  margin-top: 0;              /* avoid overlap hiding */
+  position: relative;
+  z-index: 1;
 }
 .rail-bottom {
   background: var(--brand-orange);
-  padding: 24px 0 24px 0;     /* symmetric padding to center the globe */
+  padding: 20px 0 24px 0;     /* slight nudge up of line while globe stays centered */
   display: flex;
   align-items: center;
   justify-content: center;
