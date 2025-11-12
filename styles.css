@@ -40,16 +40,16 @@ body {
   justify-content: center;
 }
 .rail-top img {
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
 }
 .rail-body {
   background: var(--brand-orange);
   flex: 1 1 auto;
   display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding-bottom: 64px;
+  align-items: center;        /* horizontally center the vertical text */
+  justify-content: flex-end;  /* move text downward */
+  padding-bottom: 96px;       /* lower placement */
   position: relative;
 }
 .rail-text {
@@ -78,7 +78,7 @@ body {
   border-bottom-right-radius: 0;
 }
 .rail-bottom img {
-  height: 40px;
+  height: 56px;
   width: auto;
 }
 
