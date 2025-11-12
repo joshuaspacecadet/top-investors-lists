@@ -194,7 +194,7 @@ body {
 
 /* Content layout */
 .content {
-  padding: calc(var(--header-h) + 24px + 9px) 130px 40px 40px;
+  padding: calc(var(--header-h) + 24px + 9px) 40px 40px 40px;
   margin-left: var(--rail);
   max-width: 1040px;
 }
@@ -260,7 +260,7 @@ h1 {
 .divider {
   display: flex;
   align-items: center;
-  margin: 80px -130px 40px calc(-40px - var(--rail));
+  margin: 80px -40px 40px calc(-40px - var(--rail));
   width: calc(100vw - var(--rail));
   padding-left: calc(40px + var(--rail));
   padding-right: 0;
@@ -280,17 +280,17 @@ h1 {
 }
 
 .records { display: flex; flex-direction: column; gap: 28px; margin: 28px 0 36px 0; padding-left: 130px; scroll-margin-top: 84px; }
-.record { display: grid; grid-template-columns: 1fr 420px; gap: 48px; border: 1px solid #1a1a1a; background: #070707; padding: 28px 20px 28px 28px; border-radius: 14px; }
-.record-info { display: flex; flex-direction: column; gap: 20px; }
+.record { display: grid; grid-template-columns: 1fr 360px; gap: 32px; border: 1px solid #1a1a1a; background: #070707; padding: 28px; border-radius: 14px; }
+.record-info { display: flex; flex-direction: column; gap: 12px; }
 .record-index { font-family: "NB Archtekt", Inter, system-ui, Arial; font-size: 40px; color: var(--accent); line-height: 1; }
 .record-name { font-family: "NB Archtekt", Inter, system-ui, Arial; font-size: 44px; line-height: 1.1; letter-spacing: 0.5px; text-transform: uppercase; }
 .record-fund { font-family: "NB Archtekt", Inter, system-ui, Arial; font-size: 22px; letter-spacing: 2px; text-transform: uppercase; color: #e6e6e6; margin-top: 10px; }
 .record-fund a { color: inherit; text-decoration: none; }
-.kv { margin-top: 24px; }
+.kv { margin-top: 16px; }
 .kv-label { font-weight: 600; margin: 0 0 6px 0; letter-spacing: 0.2px; }
 .kv-value { margin: 0; color: #e2e2e2; line-height: 1.7; }
-.record-image { display: flex; justify-content: flex-end; margin-left: 40px; }
-.record-image img { width: 420px; height: 420px; object-fit: cover; border-radius: 10px; background: #111; border: 1px solid #1f1f1f; }
+.record-image { display: flex; justify-content: flex-end; }
+.record-image img { width: 360px; height: 360px; object-fit: cover; border-radius: 10px; background: #111; border: 1px solid #1f1f1f; }
 
 /* Responsive */
 @media (max-width: 1100px) {
