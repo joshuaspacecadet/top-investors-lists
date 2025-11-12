@@ -2,9 +2,9 @@
   --accent: #ff6a00;
   --brand-orange: #FF5C00;
   --header-h: 64px;
-  --rail-min: 48px;
-  --rail-max: 68px;
-  --rail-w: 7vw;
+  --rail-min: 72px;
+  --rail-max: 120px;
+  --rail-w: 14vw;
   --rail: clamp(var(--rail-min), var(--rail-w), var(--rail-max));
 }
 
@@ -47,9 +47,9 @@ body {
   background: var(--brand-orange);
   flex: 1 1 auto;
   display: flex;
-  align-items: center;        /* horizontally center the vertical text */
-  justify-content: flex-end;  /* move text downward */
-  padding-bottom: 96px;       /* lower placement */
+  align-items: center;        /* center vertically within rail */
+  justify-content: flex-end;  /* push along the rail horizontally */
+  padding-right: 24px;        /* move text further “down” horizontally */
   position: relative;
 }
 .rail-text {
