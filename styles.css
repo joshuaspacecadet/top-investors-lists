@@ -44,9 +44,9 @@ body {
   background: var(--brand-orange);
   flex: 1 1 auto;
   display: flex;
-  align-items: center;        /* center horizontally within rail */
-  justify-content: center;    /* center vertically within rail */
-  padding-bottom: 0;          /* no extra offset; pure center */
+  align-items: flex-end;      /* move text down toward the bottom */
+  justify-content: center;    /* keep horizontally centered */
+  padding-bottom: 14px;       /* slight offset above globe */
   position: relative;
 }
 .rail-text {
