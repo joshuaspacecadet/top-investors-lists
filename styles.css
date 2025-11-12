@@ -194,7 +194,7 @@ body {
 
 /* Content layout */
 .content {
-  padding: calc(var(--header-h) + 24px + 9px) 40px 40px 40px;
+  padding: calc(var(--header-h) + 24px + 9px) 40px 40px 70px;
   margin-left: var(--rail);
   max-width: 1040px;
 }
@@ -236,7 +236,7 @@ h1 {
   width: calc(100% + 40px);
 }
 .hero-content {
-  padding: 0 40px 40px 130px;
+  padding: 0 40px 40px 160px;
 }
 .hero-copy {
   font-size: 24px;
@@ -263,9 +263,9 @@ h1 {
 .divider {
   display: flex;
   align-items: center;
-  margin: 80px -40px 40px calc(-40px - var(--rail));
+  margin: 80px -40px 40px calc(-70px - var(--rail));
   width: calc(100vw - var(--rail));
-  padding-left: calc(40px + var(--rail));
+  padding-left: calc(70px + var(--rail));
   padding-right: 0;
 }
 .divider-star {
@@ -292,7 +292,7 @@ h1 {
 .kv { margin-top: 16px; }
 .kv-label { font-weight: 600; margin: 0 0 6px 0; letter-spacing: 0.2px; }
 .kv-value { margin: 0; color: #e2e2e2; line-height: 1.7; }
-.record-image { display: flex; justify-content: flex-end; margin-left: 40px; }
+.record-image { display: flex; justify-content: flex-end; }
 .record-image img { width: 360px; height: 360px; object-fit: cover; border-radius: 10px; background: #111; border: 1px solid #1f1f1f; }
 
 /* Responsive */
@@ -303,11 +303,11 @@ h1 {
   :root { --rail: 0px; }
   .left-rail { display: none; }
   .site-header__inner { margin-left: 0; width: 100%; }
-  .content { margin-left: 0; padding: calc(var(--header-h) + 16px + 9px) 28px 28px 28px; }
+  .content { margin-left: 0; padding: calc(var(--header-h) + 16px + 9px) 28px 28px 58px; }
   .divider {
     margin: 80px -28px;
     width: calc(100% + 56px);
-    padding-left: 28px;
+    padding-left: 58px;
   }
   .record { grid-template-columns: 1fr; }
   .record-image { justify-content: flex-start; }
