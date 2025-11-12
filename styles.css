@@ -2,10 +2,7 @@
   --accent: #ff6a00;
   --brand-orange: #FF5C00;
   --header-h: 64px;
-  --rail-min: 72px;
-  --rail-max: 120px;
-  --rail-w: 14vw;
-  --rail: clamp(var(--rail-min), var(--rail-w), var(--rail-max));
+  --rail: 80px;
 }
 
 /* Base */
@@ -48,8 +45,8 @@ body {
   flex: 1 1 auto;
   display: flex;
   align-items: center;        /* center vertically within rail */
-  justify-content: flex-end;  /* push along the rail horizontally */
-  padding-right: 24px;        /* move text further “down” horizontally */
+  justify-content: flex-end;  /* push along the rail toward bottom */
+  padding-bottom: 24px;       /* move text closer to globe */
   position: relative;
 }
 .rail-text {
