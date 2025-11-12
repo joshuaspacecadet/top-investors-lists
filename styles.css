@@ -194,7 +194,7 @@ body {
 
 /* Content layout */
 .content {
-  padding: calc(var(--header-h) + 24px + 9px) 40px 40px 40px;
+  padding: calc(var(--header-h) + 24px + 9px) 20px 40px 40px;
   margin-left: var(--rail);
   max-width: 1040px;
 }
@@ -260,7 +260,7 @@ h1 {
 .divider {
   display: flex;
   align-items: center;
-  margin: 80px -40px 40px calc(-40px - var(--rail));
+  margin: 80px -20px 40px calc(-40px - var(--rail));
   width: calc(100vw - var(--rail));
   padding-left: calc(40px + var(--rail));
   padding-right: 0;
