@@ -284,7 +284,7 @@ h1 {
 .record-info { display: flex; flex-direction: column; gap: 12px; }
 .record-index { font-family: "NB Archtekt", Inter, system-ui, Arial; font-size: 40px; color: var(--accent); line-height: 1; }
 .record-name { font-family: "NB Archtekt", Inter, system-ui, Arial; font-size: 44px; line-height: 1.1; letter-spacing: 0.5px; text-transform: uppercase; }
-.record-fund { font-size: 22px; letter-spacing: 2px; text-transform: uppercase; color: #e6e6e6; margin-top: 10px; }
+.record-fund { font-family: "NB Archtekt", Inter, system-ui, Arial; font-size: 22px; letter-spacing: 2px; text-transform: uppercase; color: #e6e6e6; margin-top: 10px; }
 .record-fund a { color: inherit; text-decoration: none; border-bottom: 1px solid #333; }
 .kv { margin-top: 16px; }
 .kv-label { font-weight: 600; margin: 0 0 6px 0; letter-spacing: 0.2px; }
