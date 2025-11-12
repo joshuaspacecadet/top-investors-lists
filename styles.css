@@ -48,6 +48,7 @@ body {
   justify-content: center;    /* keep horizontally centered */
   padding-bottom: 35px;       /* ~35px above dashed divider */
   position: relative;
+  z-index: 0;                 /* ensure divider can render above */
 }
 .rail-text {
   font-family: "Chakra Petch", Inter, system-ui, Arial;
@@ -66,13 +67,14 @@ body {
   border-top: 1px dashed #111;
   background: var(--brand-orange);
   display: block;             /* ensure visible */
-  margin-top: 0;              /* avoid overlap hiding */
+  margin-top: -5px;           /* move line up ~5px */
   position: relative;
-  z-index: 1;
+  z-index: 2;                 /* paint above orange body if overlapping */
 }
 .rail-bottom {
   background: var(--brand-orange);
-  padding: 20px 0 24px 0;     /* slight nudge up of line while globe stays centered */
+  height: 96px;               /* fixed height to center globe exactly */
+  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
