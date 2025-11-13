@@ -269,7 +269,7 @@ h1 {
   display: flex;
   align-items: center;
   margin: 80px -40px 40px calc(60px - var(--rail));
-  width: calc(100vw - var(--rail));
+  width: calc(100vw + 10px);
   padding-left: calc(var(--rail) - 60px);
   padding-right: 0;
 }
