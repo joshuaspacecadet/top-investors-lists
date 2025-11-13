@@ -331,19 +331,60 @@
           .join(" ");
       }
       function generateViewCandidates(input) {
-        const raw = (input || "").trim();
-        const candidates = [];
+        const raw = String(input || "").trim();
         const slug = slugifyViewName(raw);
+        const tokens = slug.split("-").filter(Boolean);
+        const candidates = [];
+
+        // Helper: title-case each token, including hyphenated sub-parts
+        const titleCaseToken = (t) => t.replace(/\b\w/g, c => c.toUpperCase());
+        const titleCaseHyphenated = (s) => s.split("-").map(titleCaseToken).join("-");
+        const titleCaseSpaced = (s) => s.split(" ").map(titleCaseToken).join(" ");
+
+        // Helper: uppercase tokens of length <= 2 (e.g., AI, US, EU)
+        const uppercaseShortTokens = (parts) => parts.map(p => (p.length <= 2 ? p.toUpperCase() : p));
+
+        // 1) Direct mapping if provided
         if (VIEW_SLUG_TO_NAME[slug]) {
           candidates.push(VIEW_SLUG_TO_NAME[slug]);
         }
+
+        // 2) Raw and simple transforms
         if (raw) candidates.push(raw);
-        const titleSpaced = titleizeFromSlug(slug);
-        if (titleSpaced) candidates.push(titleSpaced);
-        const titleHyphen = titleSpaced.replace(/\s+/g, "-");
-        if (titleHyphen) candidates.push(titleHyphen);
-        const ucFirst = raw.replace(/\b\w/g, c => c.toUpperCase());
-        if (ucFirst) candidates.push(ucFirst);
+        const allSpaced = tokens.join(" ");
+        const allHyphen = tokens.join("-");
+        candidates.push(allSpaced, allHyphen);
+
+        // 3) Mixed: last-two hyphen, others spaced (handles "Pre-Seed")
+        if (tokens.length >= 3) {
+          const head = tokens.slice(0, -2).join(" ");
+          const tail = tokens.slice(-2).join("-");
+          candidates.push([head, tail].filter(Boolean).join(" "));
+        }
+
+        // 4) Title case variants
+        candidates.push(titleCaseSpaced(allSpaced));
+        candidates.push(titleCaseHyphenated(allHyphen));
+        if (tokens.length >= 3) {
+          const head = tokens.slice(0, -2).join(" ");
+          const tail = tokens.slice(-2).join("-");
+          candidates.push(titleCaseSpaced(head ? `${head} ${tail}` : tail));
+        }
+
+        // 5) Uppercase short tokens (<=2) variants on spaced/hyphen/mixed
+        const upperShort = uppercaseShortTokens(tokens);
+        const upperSpaced = upperShort.join(" ");
+        const upperHyphen = upperShort.join("-");
+        candidates.push(titleCaseSpaced(upperSpaced));
+        candidates.push(titleCaseHyphenated(upperHyphen));
+        if (tokens.length >= 3) {
+          const headParts = upperShort.slice(0, -2);
+          const tailParts = upperShort.slice(-2);
+          const combo = [headParts.join(" "), tailParts.join("-")].filter(Boolean).join(" ");
+          candidates.push(titleCaseSpaced(combo));
+        }
+
+        // Dedupe while preserving order and drop falsy
         return Array.from(new Set(candidates.filter(Boolean)));
       }
       function getSlugFromPath() {
