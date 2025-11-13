@@ -289,7 +289,7 @@ h1 {
 }
 
 .records { display: flex; flex-direction: column; gap: 28px; margin: 28px 0 36px 0; padding: 0 40px 0 130px; scroll-margin-top: 84px; }
-.record { display: grid; grid-template-columns: 1fr 360px; column-gap: 200px; row-gap: 32px; border: 1px solid #1a1a1a; background: #070707; padding: 28px; border-radius: 14px; }
+.record { display: grid; grid-template-columns: 1fr 360px; column-gap: 8%; row-gap: 32px; border: 1px solid #1a1a1a; background: #070707; padding: 28px; border-radius: 14px; }
 .record-info { display: flex; flex-direction: column; gap: 12px; }
 .record-index { font-family: "NB Archtekt", Inter, system-ui, Arial; font-size: 40px; color: var(--accent); line-height: 1; }
 .record-name { font-family: "NB Archtekt", Inter, system-ui, Arial; font-size: 44px; line-height: 1.1; letter-spacing: 0.5px; text-transform: uppercase; }
