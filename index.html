@@ -258,26 +258,47 @@
           }
         });
       }
-      async function fetchRecords({ base, table, view }) {
+      async function tryFetchForView({ base, table, view }) {
         const url = `/.netlify/functions/list-records?base=${encodeURIComponent(base)}&table=${encodeURIComponent(table)}&view=${encodeURIComponent(view)}`;
         const res = await fetch(url, { cache: "no-store" });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Failed to load records");
         return (data.records || []);
       }
+      async function fetchRecordsWithCandidates({ base, table, view }) {
+        const candidates = generateViewCandidates(view);
+        let lastError = null;
+        for (const cand of candidates) {
+          try {
+            const records = await tryFetchForView({ base, table, view: cand });
+            return { records, usedView: cand };
+          } catch (e) {
+            lastError = e;
+          }
+        }
+        throw lastError || new Error("Failed to load records");
+      }
       async function loadRecords() {
         const container = document.getElementById("records");
-        const { base, table, view } = document.body.dataset;
+        const { base, table } = document.body.dataset;
+        let { view } = document.body.dataset;
         const cacheKey = getCacheKey(base, table, view);
         const cached = readCache(cacheKey);
         if (cached && Array.isArray(cached.records) && cached.records.length) {
           renderRecords(container, cached.records);
         }
         try {
-          const fresh = await fetchRecords({ base, table, view });
-          const changed = !cached || JSON.stringify(fresh) !== JSON.stringify(cached.records);
+          const { records: fresh, usedView } = await fetchRecordsWithCandidates({ base, table, view });
+          if (usedView && usedView !== view) {
+            document.body.dataset.view = usedView;
+            updateUrlForViewName(usedView);
+            view = usedView;
+          }
+          const newCacheKey = getCacheKey(base, table, view);
+          const currentCached = readCache(newCacheKey);
+          const changed = !currentCached || JSON.stringify(fresh) !== JSON.stringify(currentCached.records);
           if (changed) renderRecords(container, fresh);
-          writeCache(cacheKey, fresh);
+          writeCache(newCacheKey, fresh);
         } catch (e) {
           if (!cached || !cached.records || !cached.records.length) {
             const error = document.createElement("p");
@@ -308,6 +329,22 @@
           .split("-")
           .map(w => w ? (w[0].toUpperCase() + w.slice(1)) : w)
           .join(" ");
+      }
+      function generateViewCandidates(input) {
+        const raw = (input || "").trim();
+        const candidates = [];
+        const slug = slugifyViewName(raw);
+        if (VIEW_SLUG_TO_NAME[slug]) {
+          candidates.push(VIEW_SLUG_TO_NAME[slug]);
+        }
+        if (raw) candidates.push(raw);
+        const titleSpaced = titleizeFromSlug(slug);
+        if (titleSpaced) candidates.push(titleSpaced);
+        const titleHyphen = titleSpaced.replace(/\s+/g, "-");
+        if (titleHyphen) candidates.push(titleHyphen);
+        const ucFirst = raw.replace(/\b\w/g, c => c.toUpperCase());
+        if (ucFirst) candidates.push(ucFirst);
+        return Array.from(new Set(candidates.filter(Boolean)));
       }
       function getSlugFromPath() {
         const path = window.location.pathname;
