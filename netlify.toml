@@ -2,6 +2,10 @@
   publish = "."
   functions = "netlify/functions"
 
+[[edge_functions]]
+  path = "/resources/top-investor-lists/*"
+  function = "seo"
+
 [[headers]]
   for = "/*"
   [headers.values]
