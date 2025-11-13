@@ -8,11 +8,11 @@
   Access-Control-Allow-Origin = "*"
 
 [[redirects]]
-  from = "/resources/investor-lists"
+  from = "/resources/top-investor-lists"
   to = "/index.html"
   status = 200
 
 [[redirects]]
-  from = "/resources/investor-lists/*"
+  from = "/resources/top-investor-lists/*"
   to = "/index.html"
   status = 200
