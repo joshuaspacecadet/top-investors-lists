@@ -16,7 +16,21 @@ export default async (request: Request, context: any) => {
 
   const response = await context.next();
 
-  const rewriter = new HTMLRewriter()
+  // Only process HTML responses
+  const contentType = response.headers.get("content-type") || "";
+  if (!/text\/html/i.test(contentType)) {
+    return response;
+  }
+
+  // If HTMLRewriter is unavailable, return the original response
+  // deno-lint-ignore no-explicit-any
+  const HR: any = (globalThis as any).HTMLRewriter;
+  if (!HR) {
+    return response;
+  }
+
+  let hasMetaDescription = false;
+  const rewriter = new HR()
     // Title
     .on("title", {
       element(el) {
@@ -26,13 +40,16 @@ export default async (request: Request, context: any) => {
     // Meta description (replace if exists)
     .on('meta[name="description"]', {
       element(el) {
+        hasMetaDescription = true;
         el.setAttribute("content", description);
       },
     })
     // If no meta description, append one to head
     .on("head", {
       element(el) {
-        el.append(`<meta name="description" content="${escapeHtml(description)}">`, { html: true });
+        if (!hasMetaDescription) {
+          el.append(`<meta name="description" content="${escapeHtml(description)}">`, { html: true });
+        }
         el.append(`<link rel="canonical" href="${canonicalUrl}">`, { html: true });
         // Open Graph
         el.append(`<meta property="og:type" content="website">`, { html: true });
@@ -60,7 +77,12 @@ export default async (request: Request, context: any) => {
       },
     });
 
-  return rewriter.transform(response);
+  try {
+    return rewriter.transform(response);
+  } catch (_e) {
+    // Fail open: return unmodified response rather than crashing
+    return response;
+  }
 };
 
 function deriveViewName(slug: string): string {
