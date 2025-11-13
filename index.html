@@ -288,7 +288,86 @@
         }
       }
 
+      // ----- Route <-> View mapping helpers -----
+      const VIEW_SLUG_TO_NAME = {
+        "aerospace-seed": "Aerospace Seed",
+        "robotics-pre-seed": "Robotics Pre-Seed"
+      };
+      const DEFAULT_VIEW_NAME = "Aerospace Seed"; // fallback when initial data-view is an ID and no slug present
+      function slugifyViewName(name) {
+        if (!name) return "";
+        return String(name)
+          .trim()
+          .toLowerCase()
+          .replace(/[^a-z0-9\s-]/g, "")
+          .replace(/\s+/g, "-")
+          .replace(/-+/g, "-");
+      }
+      function titleizeFromSlug(slug) {
+        return String(slug)
+          .split("-")
+          .map(w => w ? (w[0].toUpperCase() + w.slice(1)) : w)
+          .join(" ");
+      }
+      function getSlugFromPath() {
+        const path = window.location.pathname;
+        const match = path.match(/\/resources\/investor-lists\/([^\/?#]+)/i);
+        if (match && match[1]) return decodeURIComponent(match[1]);
+        const parts = path.replace(/\/+$/,"").split("/");
+        const tail = parts[parts.length - 1];
+        if (tail && tail !== "" && tail !== "index.html") return decodeURIComponent(tail);
+        return null;
+      }
+      function buildPathWithSlug(slug) {
+        const path = window.location.pathname;
+        const baseMatch = path.match(/^(.*\/resources\/investor-lists)\/?/i);
+        const base = baseMatch ? baseMatch[1] : path.replace(/\/+$/,"").split("/").slice(0, -1).join("/") || "";
+        const prefix = base === "" ? "" : base;
+        return `${prefix}/${slug}`;
+      }
+      function updateUrlForViewName(viewName) {
+        const slug = slugifyViewName(viewName);
+        if (!slug) return;
+        const newPath = buildPathWithSlug(slug);
+        const curPath = window.location.pathname;
+        if (newPath !== curPath) {
+          window.history.replaceState({}, "", newPath + window.location.search + window.location.hash);
+        }
+      }
+
+      // Resolve view from URL slug (if present) → set dataset.view (by name), sync URL, then load
+      (function initViewFromUrl() {
+        const slug = getSlugFromPath();
+        let viewNameFromUrl = null;
+        if (slug) {
+          viewNameFromUrl = VIEW_SLUG_TO_NAME[slug] || titleizeFromSlug(slug);
+        }
+        if (viewNameFromUrl) {
+          document.body.dataset.view = viewNameFromUrl;
+          updateUrlForViewName(viewNameFromUrl);
+        } else {
+          const current = document.body.dataset.view || "";
+          if (/^viw[a-zA-Z0-9]+/.test(current)) {
+            document.body.dataset.view = DEFAULT_VIEW_NAME;
+            updateUrlForViewName(DEFAULT_VIEW_NAME);
+          } else if (current) {
+            updateUrlForViewName(current);
+          }
+        }
+      })();
+
       loadRecords();
+
+      // Handle browser navigation to another slug on this page
+      window.addEventListener("popstate", () => {
+        const slug = getSlugFromPath();
+        if (!slug) return;
+        const viewName = VIEW_SLUG_TO_NAME[slug] || titleizeFromSlug(slug);
+        if (viewName) {
+          document.body.dataset.view = viewName;
+          loadRecords();
+        }
+      });
 
       // Auto-resize headline to fit on one line
       function resizeHeadline() {
