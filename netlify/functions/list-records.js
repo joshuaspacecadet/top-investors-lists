@@ -1,4 +1,5 @@
 // netlify/functions/list-records.js
+import crypto from "crypto";
 
 export const handler = async (event) => {
   try {
@@ -38,7 +39,24 @@ export const handler = async (event) => {
       };
     });
 
-    return json(200, { records: shaped });
+    // ETag + CDN/browser caching
+    const body = JSON.stringify({ records: shaped });
+    const etag = crypto.createHash("sha1").update(body).digest("hex");
+    const ifNoneMatch = (event.headers["if-none-match"] || event.headers["If-None-Match"] || "").replace(/W\//, "");
+
+    const commonHeaders = {
+      ...corsHeaders(),
+      "Content-Type": "application/json",
+      "ETag": etag,
+      "Cache-Control": "public, max-age=60, stale-while-revalidate=86400",
+      "Netlify-CDN-Cache-Control": "public, s-maxage=300, stale-while-revalidate=86400"
+    };
+
+    if (ifNoneMatch && ifNoneMatch === etag) {
+      return { statusCode: 304, headers: commonHeaders };
+    }
+
+    return { statusCode: 200, headers: commonHeaders, body };
   } catch (e) {
     return json(500, { error: e.message || "Server error" });
   }

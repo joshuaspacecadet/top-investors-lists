@@ -287,6 +287,7 @@
         if (cached && Array.isArray(cached.records) && cached.records.length) {
           renderRecords(container, cached.records);
           updateHero(view, cached.records.length);
+          updateSEO(view, cached.records.length);
         }
         try {
           const { records: fresh, usedView } = await fetchRecordsWithCandidates({ base, table, view });
@@ -295,9 +296,10 @@
             updateUrlForViewName(usedView);
             view = usedView;
             updateHero(usedView, fresh.length);
-            updateSEO(usedView);
+            updateSEO(usedView, fresh.length);
           } else {
             updateHero(view, fresh.length);
+            updateSEO(view, fresh.length);
           }
           const newCacheKey = getCacheKey(base, table, view);
           const currentCached = readCache(newCacheKey);
@@ -462,12 +464,15 @@
           el.text = json;
         }
       }
-      function updateSEO(viewName) {
+      function updateSEO(viewName, count) {
         if (!viewName) return;
         const slug = slugifyViewName(viewName);
         const canonicalPath = buildPathWithSlug(slug);
         const canonicalUrl = `${window.location.origin}${canonicalPath}`;
-        const title = `Top ${viewName} Investors | Spacecadet`;
+        const lowerView = String(viewName).toLowerCase();
+        const title = typeof count === "number" && count >= 0
+          ? `Top ${count} ${lowerView} investors`
+          : `Top ${lowerView} investors`;
         const description = `Curated list of ${viewName} investors who lead rounds. Export to Google Sheets.`;
         const image = `${window.location.origin}/Assets/handshake.jpg`;
 
@@ -635,6 +640,11 @@
           requestAnimationFrame(resizeHeadline);
         }, 100);
       });
+      
+      // Register Service Worker for background caching
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js').catch(() => {});
+      }
     </script>
   </body>
 </html>
