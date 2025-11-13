@@ -194,7 +194,7 @@ body {
 
 /* Content layout */
 .content {
-  padding: calc(var(--header-h) + 24px + 9px) 0 40px 70px;
+  padding: calc(var(--header-h) + 24px + 9px) 0 40px 10px;
   margin-left: var(--rail);
   max-width: calc(100vw - var(--rail) - 40px);
 }
@@ -267,9 +267,9 @@ h1 {
 .divider {
   display: flex;
   align-items: center;
-  margin: 80px -40px 40px calc(-70px - var(--rail));
+  margin: 80px -40px 40px calc(-10px - var(--rail));
   width: calc(100vw - var(--rail));
-  padding-left: calc(70px + var(--rail));
+  padding-left: calc(10px + var(--rail));
   padding-right: 0;
 }
 .divider-star {
