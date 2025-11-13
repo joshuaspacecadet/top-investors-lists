@@ -26,6 +26,7 @@
 html, body {
   background: #000;
   color: #fff;
+  overflow-x: hidden; /* prevent horizontal scroll */
 }
 body {
   font-family: Inter, system-ui, Arial;
