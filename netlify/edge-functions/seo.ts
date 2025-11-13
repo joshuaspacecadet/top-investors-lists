@@ -2,96 +2,106 @@
 // Runs at the edge so crawlers receive the correct static meta immediately.
 // Docs: https://docs.netlify.com/edge-functions/overview/
 export default async (request: Request, context: any) => {
-  const { pathname, origin } = new URL(request.url);
-  const slugMatch = pathname.match(/\/resources\/top-investor-lists\/([^\/?#]+)/i);
-  const slug = slugMatch && slugMatch[1] ? decodeURIComponent(slugMatch[1]) : "";
-
-  const viewName = deriveViewName(slug);
-  const canonicalUrl = `${origin}${buildCanonicalPath(pathname, slug)}`;
-  const title = viewName ? `Top ${viewName} Investors | Spacecadet` : "Top Investors | Spacecadet";
-  const description = viewName
-    ? `Curated list of ${viewName} investors who lead rounds. Export to Google Sheets.`
-    : `Curated lists of top investors by category. Export to Google Sheets.`;
-  const image = `${origin}/Assets/handshake.jpg`;
-
-  const response = await context.next();
-
-  // Only process HTML responses
-  const contentType = response.headers.get("content-type") || "";
-  if (!/text\/html/i.test(contentType)) {
-    return response;
-  }
-
-  let hasMetaDescription = false;
-  const rewriter = new HTMLRewriter()
-    // Title
-    .on("title", {
-      element(el) {
-        el.setInnerContent(title);
-      },
-    })
-    // Hero headline and copy (server-side update to avoid default flash)
-    .on("h1.hero-headline", {
-      element(el) {
-        if (viewName) {
-          el.setInnerContent(`Top 3 ${viewName} Investors`);
-        }
-      },
-    })
-    .on("p.hero-copy", {
-      element(el) {
-        if (viewName) {
-          el.setInnerContent(
-            `Identifying appropriate investors is hard. Here's a curated list of ${viewName} investors (in alphabetical order) who actually lead rounds.`
-          );
-        }
-      },
-    })
-    // Meta description (replace if exists)
-    .on('meta[name="description"]', {
-      element(el) {
-        hasMetaDescription = true;
-        el.setAttribute("content", description);
-      },
-    })
-    // If no meta description, append one to head
-    .on("head", {
-      element(el) {
-        if (!hasMetaDescription) {
-          el.append(`<meta name="description" content="${escapeHtml(description)}">`, { html: true });
-        }
-        el.append(`<link rel="canonical" href="${canonicalUrl}">`, { html: true });
-        // Open Graph
-        el.append(`<meta property="og:type" content="website">`, { html: true });
-        el.append(`<meta property="og:title" content="${escapeHtml(title)}">`, { html: true });
-        el.append(`<meta property="og:description" content="${escapeHtml(description)}">`, { html: true });
-        el.append(`<meta property="og:url" content="${canonicalUrl}">`, { html: true });
-        el.append(`<meta property="og:image" content="${image}">`, { html: true });
-        // Twitter
-        el.append(`<meta name="twitter:card" content="summary_large_image">`, { html: true });
-        el.append(`<meta name="twitter:title" content="${escapeHtml(title)}">`, { html: true });
-        el.append(`<meta name="twitter:description" content="${escapeHtml(description)}">`, { html: true });
-        el.append(`<meta name="twitter:image" content="${image}">`, { html: true });
-        // JSON-LD
-        el.append(
-          `<script type="application/ld+json" id="ld-collection">${JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "CollectionPage",
-            name: title,
-            description,
-            url: canonicalUrl,
-            isPartOf: { "@type": "WebSite", name: "Spacecadet", url: origin },
-          })}</script>`,
-          { html: true }
-        );
-      },
-    });
-
   try {
+    const { pathname, origin } = new URL(request.url);
+    const slugMatch = pathname.match(/\/resources\/top-investor-lists\/([^\/?#]+)/i);
+    const slug = slugMatch && slugMatch[1] ? decodeURIComponent(slugMatch[1]) : "";
+
+    const viewName = deriveViewName(slug);
+    const canonicalUrl = `${origin}${buildCanonicalPath(pathname, slug)}`;
+    const title = viewName ? `Top ${viewName} Investors | Spacecadet` : "Top Investors | Spacecadet";
+    const description = viewName
+      ? `Curated list of ${viewName} investors who lead rounds. Export to Google Sheets.`
+      : `Curated lists of top investors by category. Export to Google Sheets.`;
+    const image = `${origin}/Assets/handshake.jpg`;
+
+    const response = await context.next();
+
+    // Only process HTML responses
+    const contentType = response.headers.get("content-type") || "";
+    if (!/text\/html/i.test(contentType)) {
+      return response;
+    }
+
+    let hasMetaDescription = false;
+    const rewriter = new HTMLRewriter()
+      // Title
+      .on("title", {
+        element(el) {
+          try {
+            el.setInnerContent(title);
+          } catch {}
+        },
+      })
+      // Hero headline and copy (server-side update to avoid default flash)
+      .on("h1.hero-headline", {
+        element(el) {
+          try {
+            if (viewName) {
+              el.setInnerContent(`Top 3 ${viewName} Investors`);
+            }
+          } catch {}
+        },
+      })
+      .on("p.hero-copy", {
+        element(el) {
+          try {
+            if (viewName) {
+              el.setInnerContent(
+                `Identifying appropriate investors is hard. Here's a curated list of ${viewName} investors (in alphabetical order) who actually lead rounds.`
+              );
+            }
+          } catch {}
+        },
+      })
+      // Meta description (replace if exists)
+      .on('meta[name="description"]', {
+        element(el) {
+          try {
+            hasMetaDescription = true;
+            el.setAttribute("content", description);
+          } catch {}
+        },
+      })
+      // If no meta description, append one to head
+      .on("head", {
+        element(el) {
+          try {
+            if (!hasMetaDescription) {
+              el.append(`<meta name="description" content="${escapeHtml(description)}">`, { html: true });
+            }
+            el.append(`<link rel="canonical" href="${canonicalUrl}">`, { html: true });
+            // Open Graph
+            el.append(`<meta property="og:type" content="website">`, { html: true });
+            el.append(`<meta property="og:title" content="${escapeHtml(title)}">`, { html: true });
+            el.append(`<meta property="og:description" content="${escapeHtml(description)}">`, { html: true });
+            el.append(`<meta property="og:url" content="${canonicalUrl}">`, { html: true });
+            el.append(`<meta property="og:image" content="${image}">`, { html: true });
+            // Twitter
+            el.append(`<meta name="twitter:card" content="summary_large_image">`, { html: true });
+            el.append(`<meta name="twitter:title" content="${escapeHtml(title)}">`, { html: true });
+            el.append(`<meta name="twitter:description" content="${escapeHtml(description)}">`, { html: true });
+            el.append(`<meta name="twitter:image" content="${image}">`, { html: true });
+            // JSON-LD
+            el.append(
+              `<script type="application/ld+json" id="ld-collection">${JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "CollectionPage",
+                name: title,
+                description,
+                url: canonicalUrl,
+                isPartOf: { "@type": "WebSite", name: "Spacecadet", url: origin },
+              })}</script>`,
+              { html: true }
+            );
+          } catch {}
+        },
+      });
+
     return rewriter.transform(response);
-  } catch (_e) {
-    // Fail open: return unmodified response rather than crashing
-    return response;
+  } catch {
+    // Fail open: return origin HTML if anything throws
+    return context.next();
   }
 };
 
