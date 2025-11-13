@@ -257,11 +257,12 @@ h1 {
   overflow: hidden;
 }
 .hero-image img {
-  width: 100%;
+  width: 85%;
   height: auto;
   min-height: 400px;
   object-fit: contain;
   display: block;
+  margin-left: auto; /* keep image anchored to the right */
 }
 
 .divider {
@@ -333,6 +334,7 @@ h1 {
     padding-left: 28px;
   }
   .hero-image img {
+    width: 100%;
     min-height: 300px;
   }
 }
