@@ -22,15 +22,8 @@ export default async (request: Request, context: any) => {
     return response;
   }
 
-  // If HTMLRewriter is unavailable, return the original response
-  // deno-lint-ignore no-explicit-any
-  const HR: any = (globalThis as any).HTMLRewriter;
-  if (!HR) {
-    return response;
-  }
-
   let hasMetaDescription = false;
-  const rewriter = new HR()
+  const rewriter = new HTMLRewriter()
     // Title
     .on("title", {
       element(el) {

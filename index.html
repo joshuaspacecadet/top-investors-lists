@@ -519,6 +519,7 @@
       }
 
       // Resolve view from URL slug (if present) → set dataset.view (by name), sync URL, then load
+      let HAS_VIEW = false;
       (function initViewFromUrl() {
         const slug = getSlugFromPath();
         let viewNameFromUrl = null;
@@ -530,22 +531,17 @@
           updateUrlForViewName(viewNameFromUrl);
           updateHero(viewNameFromUrl);
           updateSEO(viewNameFromUrl);
+          HAS_VIEW = true;
         } else {
-          const current = document.body.dataset.view || "";
-          if (/^viw[a-zA-Z0-9]+/.test(current)) {
-            document.body.dataset.view = DEFAULT_VIEW_NAME;
-            updateUrlForViewName(DEFAULT_VIEW_NAME);
-            updateHero(DEFAULT_VIEW_NAME);
-            updateSEO(DEFAULT_VIEW_NAME);
-          } else if (current) {
-            updateUrlForViewName(current);
-            updateHero(current);
-            updateSEO(current);
-          }
+          const main = document.getElementById("main");
+          if (main) main.style.display = "none";
+          HAS_VIEW = false;
         }
       })();
 
-      loadRecords();
+      if (HAS_VIEW) {
+        loadRecords();
+      }
 
       // Handle browser navigation to another slug on this page
       window.addEventListener("popstate", () => {
@@ -556,6 +552,9 @@
           document.body.dataset.view = viewName;
           updateHero(viewName);
           updateSEO(viewName);
+          const main = document.getElementById("main");
+          if (main) main.style.display = "";
+          HAS_VIEW = true;
           loadRecords();
         }
       });
