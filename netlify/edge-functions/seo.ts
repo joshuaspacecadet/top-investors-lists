@@ -37,6 +37,23 @@ export default async (request: Request, context: any) => {
         el.setInnerContent(title);
       },
     })
+    // Hero headline and copy (server-side update to avoid default flash)
+    .on("h1.hero-headline", {
+      element(el) {
+        if (viewName) {
+          el.setInnerContent(`Top 3 ${viewName} Investors`);
+        }
+      },
+    })
+    .on("p.hero-copy", {
+      element(el) {
+        if (viewName) {
+          el.setInnerContent(
+            `Identifying appropriate investors is hard. Here's a curated list of ${viewName} investors (in alphabetical order) who actually lead rounds.`
+          );
+        }
+      },
+    })
     // Meta description (replace if exists)
     .on('meta[name="description"]', {
       element(el) {
