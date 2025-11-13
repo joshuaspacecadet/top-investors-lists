@@ -224,7 +224,10 @@ h1 {
   letter-spacing: -0.05em;
   line-height: 0.9;
   text-align: left;
-  max-width: 80%;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 .hero-bottom {
   display: grid;
@@ -314,8 +317,10 @@ h1 {
   .record-image { justify-content: flex-start; }
   .record-image img { width: 100%; max-width: 520px; height: auto; max-height: 360px; }
   .hero-headline {
-    font-size: 52px;
+    font-size: clamp(2rem, 6vw, 3.25rem);
     padding: 28px 28px 24px 28px;
+    white-space: nowrap;
+    overflow: hidden;
   }
   .hero-bottom {
     grid-template-columns: 1fr;

@@ -251,6 +251,79 @@
       }
 
       loadRecords();
+
+      // Auto-resize headline to fit on one line
+      function resizeHeadline() {
+        const headline = document.querySelector('.hero-headline');
+        if (!headline) return;
+        
+        // Use requestAnimationFrame to ensure layout is complete
+        requestAnimationFrame(() => {
+          // Measure against the headline's own content box to avoid underestimation
+          const paddingLeft = parseInt(window.getComputedStyle(headline).paddingLeft);
+          const paddingRight = parseInt(window.getComputedStyle(headline).paddingRight);
+          
+          const minFontSizeRem = 2; // 2rem minimum
+          const maxFontSizeRem = 5; // 5rem maximum
+          const step = 0.05; // Increment by 0.05rem for smoother resizing
+          
+          // Start at max size (5rem) to test
+          headline.style.fontSize = maxFontSizeRem + 'rem';
+          
+          // Force a reflow to get accurate measurements
+          headline.offsetHeight;
+          
+          let fontSizeRem = maxFontSizeRem;
+          let contentWidth = headline.clientWidth; // excludes padding
+          const availableWidth = contentWidth;     // available line width for the text
+          
+          // Only resize if it doesn't fit at max size
+          if (headline.scrollWidth > availableWidth) {
+            // Reduce font size incrementally until it fits
+            while (fontSizeRem > minFontSizeRem && headline.scrollWidth > availableWidth) {
+              fontSizeRem -= step;
+              headline.style.fontSize = fontSizeRem + 'rem';
+              // Force reflow for accurate measurement
+              headline.offsetHeight;
+              contentWidth = headline.clientWidth;
+            }
+            
+            // Ensure it doesn't go below minimum
+            if (fontSizeRem < minFontSizeRem) {
+              headline.style.fontSize = minFontSizeRem + 'rem';
+            }
+          }
+        });
+      }
+
+      // Resize after fonts load and page is ready
+      function initResize() {
+        if (document.fonts && document.fonts.ready) {
+          document.fonts.ready.then(() => {
+            requestAnimationFrame(() => {
+              setTimeout(resizeHeadline, 200);
+            });
+          });
+        } else {
+          requestAnimationFrame(() => {
+            setTimeout(resizeHeadline, 500);
+          });
+        }
+      }
+
+      if (document.readyState === 'loading') {
+        window.addEventListener('DOMContentLoaded', initResize);
+      } else {
+        initResize();
+      }
+      
+      let resizeTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          requestAnimationFrame(resizeHeadline);
+        }, 100);
+      });
     </script>
   </body>
 </html>
