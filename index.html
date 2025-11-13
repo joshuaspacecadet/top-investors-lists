@@ -286,6 +286,7 @@
         const cached = readCache(cacheKey);
         if (cached && Array.isArray(cached.records) && cached.records.length) {
           renderRecords(container, cached.records);
+          updateHero(view, cached.records.length);
         }
         try {
           const { records: fresh, usedView } = await fetchRecordsWithCandidates({ base, table, view });
@@ -293,8 +294,10 @@
             document.body.dataset.view = usedView;
             updateUrlForViewName(usedView);
             view = usedView;
-            updateHero(usedView);
+            updateHero(usedView, fresh.length);
             updateSEO(usedView);
+          } else {
+            updateHero(view, fresh.length);
           }
           const newCacheKey = getCacheKey(base, table, view);
           const currentCached = readCache(newCacheKey);
@@ -499,11 +502,12 @@
       }
 
       // Update hero headline and copy to reflect current view
-      function updateHero(viewName) {
+      function updateHero(viewName, count) {
         const headline = document.querySelector('.hero-headline');
         const copy = document.querySelector('.hero-copy');
         if (headline && viewName) {
-          headline.textContent = `Top 3 ${viewName} Investors`;
+          const n = typeof count === "number" && count >= 0 ? count : null;
+          headline.textContent = n != null ? `Top ${n} ${viewName} Investors` : `Top ${viewName} Investors`;
         }
         if (copy && viewName) {
           copy.textContent = `Identifying appropriate investors is hard. Here's a curated list of ${viewName} investors (in alphabetical order) who actually lead rounds.`;

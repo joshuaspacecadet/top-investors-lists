@@ -34,11 +34,12 @@ export default async (request: Request, context: any) => {
         },
       })
       // Hero headline and copy (server-side update to avoid default flash)
-      .on("h1.hero-headline", {
+    .on("h1.hero-headline", {
         element(el) {
           try {
             if (viewName) {
-              el.setInnerContent(`Top 3 ${viewName} Investors`);
+              // No number here; client will fill the accurate count after data loads
+              el.setInnerContent(`Top ${viewName} Investors`);
             }
           } catch {}
         },
