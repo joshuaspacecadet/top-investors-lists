@@ -294,6 +294,7 @@
             updateUrlForViewName(usedView);
             view = usedView;
             updateHero(usedView);
+            updateSEO(usedView);
           }
           const newCacheKey = getCacheKey(base, table, view);
           const currentCached = readCache(newCacheKey);
@@ -414,6 +415,89 @@
         }
       }
 
+      // ---- SEO helpers (dynamic per-view) ----
+      function ensureMetaByName(name, content) {
+        if (!name || !content) return;
+        let el = document.querySelector(`meta[name="${name}"]`);
+        if (!el) {
+          el = document.createElement("meta");
+          el.setAttribute("name", name);
+          document.head.appendChild(el);
+        }
+        el.setAttribute("content", content);
+      }
+      function ensureMetaByProperty(property, content) {
+        if (!property || !content) return;
+        let el = document.querySelector(`meta[property="${property}"]`);
+        if (!el) {
+          el = document.createElement("meta");
+          el.setAttribute("property", property);
+          document.head.appendChild(el);
+        }
+        el.setAttribute("content", content);
+      }
+      function ensureLinkRel(rel, href) {
+        if (!rel || !href) return;
+        let el = document.querySelector(`link[rel="${rel}"]`);
+        if (!el) {
+          el = document.createElement("link");
+          el.setAttribute("rel", rel);
+          document.head.appendChild(el);
+        }
+        el.setAttribute("href", href);
+      }
+      function ensureJsonLd(id, obj) {
+        let el = document.getElementById(id);
+        const json = JSON.stringify(obj);
+        if (!el) {
+          el = document.createElement("script");
+          el.type = "application/ld+json";
+          el.id = id;
+          el.text = json;
+          document.head.appendChild(el);
+        } else {
+          el.text = json;
+        }
+      }
+      function updateSEO(viewName) {
+        if (!viewName) return;
+        const slug = slugifyViewName(viewName);
+        const canonicalPath = buildPathWithSlug(slug);
+        const canonicalUrl = `${window.location.origin}${canonicalPath}`;
+        const title = `Top ${viewName} Investors | Spacecadet`;
+        const description = `Curated list of ${viewName} investors who lead rounds. Export to Google Sheets.`;
+        const image = `${window.location.origin}/Assets/handshake.jpg`;
+
+        document.title = title;
+        ensureMetaByName("description", description);
+
+        ensureMetaByProperty("og:type", "website");
+        ensureMetaByProperty("og:title", title);
+        ensureMetaByProperty("og:description", description);
+        ensureMetaByProperty("og:url", canonicalUrl);
+        ensureMetaByProperty("og:image", image);
+
+        ensureMetaByName("twitter:card", "summary_large_image");
+        ensureMetaByName("twitter:title", title);
+        ensureMetaByName("twitter:description", description);
+        ensureMetaByName("twitter:image", image);
+
+        ensureLinkRel("canonical", canonicalUrl);
+
+        ensureJsonLd("ld-collection", {
+          "@context": "https://schema.org",
+          "@type": "CollectionPage",
+          "name": title,
+          "description": description,
+          "url": canonicalUrl,
+          "isPartOf": {
+            "@type": "WebSite",
+            "name": "Spacecadet",
+            "url": window.location.origin
+          }
+        });
+      }
+
       // Update hero headline and copy to reflect current view
       function updateHero(viewName) {
         const headline = document.querySelector('.hero-headline');
@@ -445,15 +529,18 @@
           document.body.dataset.view = viewNameFromUrl;
           updateUrlForViewName(viewNameFromUrl);
           updateHero(viewNameFromUrl);
+          updateSEO(viewNameFromUrl);
         } else {
           const current = document.body.dataset.view || "";
           if (/^viw[a-zA-Z0-9]+/.test(current)) {
             document.body.dataset.view = DEFAULT_VIEW_NAME;
             updateUrlForViewName(DEFAULT_VIEW_NAME);
             updateHero(DEFAULT_VIEW_NAME);
+            updateSEO(DEFAULT_VIEW_NAME);
           } else if (current) {
             updateUrlForViewName(current);
             updateHero(current);
+            updateSEO(current);
           }
         }
       })();
@@ -468,6 +555,7 @@
         if (viewName) {
           document.body.dataset.view = viewName;
           updateHero(viewName);
+          updateSEO(viewName);
           loadRecords();
         }
       });
