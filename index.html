@@ -144,109 +144,147 @@
         }
       });
 
+      // SWR-style local cache for instant render + background refresh
+      const SWR_CACHE_VERSION = "v1";
+      function getCacheKey(base, table, view) {
+        return `records:${SWR_CACHE_VERSION}:${base}:${table}:${view}`;
+      }
+      function readCache(key) {
+        try {
+          const raw = localStorage.getItem(key);
+          if (!raw) return null;
+          return JSON.parse(raw);
+        } catch (_) {
+          return null;
+        }
+      }
+      function writeCache(key, records) {
+        try {
+          const payload = { ts: Date.now(), records };
+          localStorage.setItem(key, JSON.stringify(payload));
+        } catch (_) {}
+      }
+      function renderRecords(container, records) {
+        container.innerHTML = "";
+        const toc = document.getElementById("toc");
+        if (toc) toc.innerHTML = "";
+        (records || []).forEach((r, i) => {
+          const wrap = document.createElement("div");
+          wrap.className = "record";
+          wrap.id = `rec-${i+1}`;
+
+          const info = document.createElement("div");
+          info.className = "record-info";
+
+          const idxEl = document.createElement("div");
+          idxEl.className = "record-index";
+          idxEl.textContent = String(i + 1).padStart(2, "0");
+          info.appendChild(idxEl);
+
+          const name = document.createElement("div");
+          name.className = "record-name";
+          name.textContent = (r.contactName || "").toUpperCase();
+          info.appendChild(name);
+
+          const fundLine = document.createElement("div");
+          fundLine.className = "record-fund";
+          const fundLink = document.createElement("a");
+          fundLink.href = r.link || "#";
+          fundLink.target = "_blank";
+          fundLink.rel = "noopener";
+          fundLink.textContent = r.fund || "Fund";
+          fundLine.appendChild(fundLink);
+          info.appendChild(fundLine);
+
+          const check = document.createElement("div");
+          check.className = "kv";
+          const checkLabel = document.createElement("p");
+          checkLabel.className = "kv-label";
+          checkLabel.textContent = "Check Size:";
+          const checkVal = document.createElement("p");
+          checkVal.className = "kv-value";
+          checkVal.textContent = r.checkSize || "";
+          check.appendChild(checkLabel);
+          check.appendChild(checkVal);
+          info.appendChild(check);
+
+          const focus = document.createElement("div");
+          focus.className = "kv";
+          const focusLabel = document.createElement("p");
+          focusLabel.className = "kv-label";
+          focusLabel.textContent = "Focus:";
+          const focusVal = document.createElement("p");
+          focusVal.className = "kv-value";
+          focusVal.textContent = r.focus || "";
+          focus.appendChild(focusLabel);
+          focus.appendChild(focusVal);
+          info.appendChild(focus);
+
+          const advice = document.createElement("div");
+          advice.className = "kv";
+          const adviceLabel = document.createElement("p");
+          adviceLabel.className = "kv-label";
+          adviceLabel.textContent = "Pitch Advice:";
+          const adviceVal = document.createElement("p");
+          adviceVal.className = "kv-value";
+          adviceVal.textContent = r.pitchAdvice || "";
+          advice.appendChild(adviceLabel);
+          advice.appendChild(adviceVal);
+          info.appendChild(advice);
+
+          wrap.appendChild(info);
+
+          if (r.imageUrl) {
+            const imgWrap = document.createElement("div");
+            imgWrap.className = "record-image";
+            const img = document.createElement("img");
+            img.src = r.imageUrl;
+            img.loading = "lazy";
+            img.alt = r.contactName ? `${r.contactName} image` : "Investor image";
+            imgWrap.appendChild(img);
+            wrap.appendChild(imgWrap);
+          }
+
+          container.appendChild(wrap);
+
+          // TOC entry
+          if (toc) {
+            const li = document.createElement("li");
+            const a = document.createElement("a");
+            a.href = `#rec-${i+1}`;
+            a.textContent = r.contactName || r.fund || `Investor ${i+1}`;
+            li.appendChild(a);
+            toc.appendChild(li);
+          }
+        });
+      }
+      async function fetchRecords({ base, table, view }) {
+        const url = `/.netlify/functions/list-records?base=${encodeURIComponent(base)}&table=${encodeURIComponent(table)}&view=${encodeURIComponent(view)}`;
+        const res = await fetch(url, { cache: "no-store" });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Failed to load records");
+        return (data.records || []);
+      }
       async function loadRecords() {
         const container = document.getElementById("records");
         const { base, table, view } = document.body.dataset;
+        const cacheKey = getCacheKey(base, table, view);
+        const cached = readCache(cacheKey);
+        if (cached && Array.isArray(cached.records) && cached.records.length) {
+          renderRecords(container, cached.records);
+        }
         try {
-          const url = `/.netlify/functions/list-records?base=${encodeURIComponent(base)}&table=${encodeURIComponent(table)}&view=${encodeURIComponent(view)}`;
-          const res = await fetch(url);
-          const data = await res.json();
-          if (!res.ok) throw new Error(data.error || "Failed to load records");
-
-          const toc = document.getElementById("toc");
-          (data.records || []).forEach((r, i) => {
-            const wrap = document.createElement("div");
-            wrap.className = "record";
-            wrap.id = `rec-${i+1}`;
-
-            const info = document.createElement("div");
-            info.className = "record-info";
-
-            const idxEl = document.createElement("div");
-            idxEl.className = "record-index";
-            idxEl.textContent = String(i + 1).padStart(2, "0");
-            info.appendChild(idxEl);
-
-            const name = document.createElement("div");
-            name.className = "record-name";
-            name.textContent = (r.contactName || "").toUpperCase();
-            info.appendChild(name);
-
-            const fundLine = document.createElement("div");
-            fundLine.className = "record-fund";
-            const fundLink = document.createElement("a");
-            fundLink.href = r.link || "#";
-            fundLink.target = "_blank";
-            fundLink.rel = "noopener";
-            fundLink.textContent = r.fund || "Fund";
-            fundLine.appendChild(fundLink);
-            info.appendChild(fundLine);
-
-            const check = document.createElement("div");
-            check.className = "kv";
-            const checkLabel = document.createElement("p");
-            checkLabel.className = "kv-label";
-            checkLabel.textContent = "Check Size:";
-            const checkVal = document.createElement("p");
-            checkVal.className = "kv-value";
-            checkVal.textContent = r.checkSize || "";
-            check.appendChild(checkLabel);
-            check.appendChild(checkVal);
-            info.appendChild(check);
-
-            const focus = document.createElement("div");
-            focus.className = "kv";
-            const focusLabel = document.createElement("p");
-            focusLabel.className = "kv-label";
-            focusLabel.textContent = "Focus:";
-            const focusVal = document.createElement("p");
-            focusVal.className = "kv-value";
-            focusVal.textContent = r.focus || "";
-            focus.appendChild(focusLabel);
-            focus.appendChild(focusVal);
-            info.appendChild(focus);
-
-            const advice = document.createElement("div");
-            advice.className = "kv";
-            const adviceLabel = document.createElement("p");
-            adviceLabel.className = "kv-label";
-            adviceLabel.textContent = "Pitch Advice:";
-            const adviceVal = document.createElement("p");
-            adviceVal.className = "kv-value";
-            adviceVal.textContent = r.pitchAdvice || "";
-            advice.appendChild(adviceLabel);
-            advice.appendChild(adviceVal);
-            info.appendChild(advice);
-
-            wrap.appendChild(info);
-
-            if (r.imageUrl) {
-              const imgWrap = document.createElement("div");
-              imgWrap.className = "record-image";
-              const img = document.createElement("img");
-              img.src = r.imageUrl;
-              img.alt = r.contactName ? `${r.contactName} image` : "Investor image";
-              imgWrap.appendChild(img);
-              wrap.appendChild(imgWrap);
-            }
-
-            container.appendChild(wrap);
-
-            // TOC entry
-            if (toc) {
-              const li = document.createElement("li");
-              const a = document.createElement("a");
-              a.href = `#rec-${i+1}`;
-              a.textContent = r.contactName || r.fund || `Investor ${i+1}`;
-              li.appendChild(a);
-              toc.appendChild(li);
-            }
-          });
+          const fresh = await fetchRecords({ base, table, view });
+          const changed = !cached || JSON.stringify(fresh) !== JSON.stringify(cached.records);
+          if (changed) renderRecords(container, fresh);
+          writeCache(cacheKey, fresh);
         } catch (e) {
-          const error = document.createElement("p");
-          error.className = "note";
-          error.textContent = "Failed to load records.";
-          container.appendChild(error);
+          if (!cached || !cached.records || !cached.records.length) {
+            const error = document.createElement("p");
+            error.className = "note";
+            error.textContent = "Failed to load records.";
+            container.appendChild(error);
+          }
         }
       }
 
