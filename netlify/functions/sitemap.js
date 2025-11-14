@@ -12,7 +12,9 @@ export const handler = async () => {
     "Bio Pre-Seed",
     "Health Pre-Seed",
     "Energy Pre-Seed",
-    "Robotics Pre-Seed"
+    "Robotics Pre-Seed",
+    "Seed",
+    "Pre-Seed"
   ];
   const slugify = (name) =>
     name.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-');

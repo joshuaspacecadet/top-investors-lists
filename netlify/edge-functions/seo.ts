@@ -151,6 +151,10 @@ function deriveViewName(slug: string): string {
   if (!clean) return "";
   const tokens = clean.split("-").filter(Boolean);
   const upperShort = tokens.map((t) => (t.length <= 2 ? t.toUpperCase() : t));
+  // Exactly "pre-seed" → "Pre-Seed"
+  if (upperShort.length === 2 && upperShort[0] === "pre" && upperShort[1] === "seed") {
+    return "Pre-Seed";
+  }
   // Prefer mixed format: head spaced + last-two hyphen
   if (upperShort.length >= 3) {
     const head = upperShort.slice(0, -2).join(" ");

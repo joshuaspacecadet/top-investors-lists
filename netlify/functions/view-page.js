@@ -13,6 +13,8 @@ const SLUG_TO_VIEW = {
   "health-pre-seed": "Health Pre-Seed",
   "energy-pre-seed": "Energy Pre-Seed",
   "robotics-pre-seed": "Robotics Pre-Seed",
+  "seed": "Seed",
+  "pre-seed": "Pre-Seed",
 };
 
 export const handler = async (event) => {
@@ -20,7 +22,7 @@ export const handler = async (event) => {
     const origin = process.env.SITE_ORIGIN || "https://top-investors-lists.netlify.app";
     const m = event.path.match(/\/resources\/top-investor-lists\/([^\/?#]+)/i);
     const slug = m && m[1] ? decodeURIComponent(m[1]) : "";
-    const viewName = SLUG_TO_VIEW[slug] || titleize(slug.replace(/-/g, " "));
+    const viewName = SLUG_TO_VIEW[slug] || displayNameFromSlug(slug);
     if (!viewName) return notFound();
 
     const base = process.env.AIRTABLE_BASE || "";
@@ -84,6 +86,21 @@ function titleize(s) {
     .map((w) => (w ? w[0].toUpperCase() + w.slice(1) : w))
     .join(" ");
 }
+function displayNameFromSlug(slug) {
+  const clean = String(slug || "").trim().toLowerCase();
+  const parts = clean.split("-").filter(Boolean);
+  if (parts.length >= 2) {
+    const last = parts[parts.length - 1];
+    const secondLast = parts[parts.length - 2];
+    if (secondLast === "pre" && last === "seed") {
+      const head = parts.slice(0, -2).map(cap).join(" ");
+      const tail = "Pre-Seed";
+      return head ? `${head} ${tail}` : tail;
+    }
+  }
+  return titleize(clean.replace(/-/g, " "));
+}
+function cap(w) { return w ? w[0].toUpperCase() + w.slice(1) : w; }
 function escapeHtml(s) {
   return String(s || "")
     .replace(/&/g, "&amp;")
