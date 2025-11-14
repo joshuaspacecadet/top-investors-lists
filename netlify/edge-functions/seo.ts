@@ -3,6 +3,10 @@
 // Docs: https://docs.netlify.com/edge-functions/overview/
 export default async (request: Request, context: any) => {
   try {
+    // Skip SEO processing for internal API fetches
+    if (request.headers.get("x-skip-seo") === "1") {
+      return context.next();
+    }
     const { pathname, origin } = new URL(request.url);
     const slugMatch = pathname.match(/\/resources\/top-investor-lists\/([^\/?#]+)/i);
     const slug = slugMatch && slugMatch[1] ? decodeURIComponent(slugMatch[1]) : "";
@@ -17,9 +21,12 @@ export default async (request: Request, context: any) => {
       if (base && table) {
         const listUrl = `${origin}/.netlify/functions/list-records?base=${encodeURIComponent(base)}&table=${encodeURIComponent(table)}&view=${encodeURIComponent(viewName)}`;
         const ac = new AbortController();
-        const timeoutId = setTimeout(() => ac.abort(), 3000);
+        const timeoutId = setTimeout(() => ac.abort(), 8000);
         try {
-          const resp = await fetch(listUrl, { signal: ac.signal, headers: { accept: "application/json" } });
+          const resp = await fetch(listUrl, {
+            signal: ac.signal,
+            headers: { accept: "application/json", "x-skip-seo": "1" }
+          });
           if (resp.ok) {
             const j = await resp.json();
             if (j && Array.isArray(j.records)) count = j.records.length;
