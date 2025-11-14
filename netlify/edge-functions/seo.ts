@@ -38,8 +38,7 @@ export default async (request: Request, context: any) => {
         }
       }
     }
-    const lowerView = viewName ? String(viewName).toLowerCase() : "";
-    const titleBase = viewName ? (count != null ? `Top ${count} ${lowerView} investors` : `Top ${lowerView} investors`) : "Top investors";
+    const titleBase = viewName ? (count != null ? `Top ${count} ${viewName} Investors` : `Top ${viewName} Investors`) : "Top Investors";
     const title = `${titleBase} - Spacecadet`;
     const description = viewName
       ? `Curated list of ${viewName} investors who lead rounds. Export to Google Sheets.`

@@ -33,8 +33,7 @@ export const handler = async (event) => {
     const json = await resp.json();
     const count = Array.isArray(json.records) ? json.records.length : 0;
 
-    const lowerView = viewName.toLowerCase();
-    const title = `Top ${count} ${lowerView} investors - Spacecadet`;
+    const title = `Top ${count} ${viewName} Investors - Spacecadet`;
     const desc = `Curated list of ${viewName} investors who lead rounds. Export to Google Sheets.`;
     const canonical = `${origin}/resources/top-investor-lists/${slug}`;
     const image = `${origin}/Assets/handshake.jpg`;
