@@ -16,14 +16,10 @@
   Access-Control-Allow-Origin = "*"
 
 [[redirects]]
-  from = "/resources/top-investor-lists"
-  to = "/index.html"
-  status = 200
-
-[[redirects]]
   from = "/resources/top-investor-lists/*"
-  to = "/index.html"
+  to = "/.netlify/functions/view-page"
   status = 200
+  force = true
 
 [[redirects]]
   from = "/sitemap.xml"
