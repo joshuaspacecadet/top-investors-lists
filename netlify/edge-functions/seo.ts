@@ -9,7 +9,31 @@ export default async (request: Request, context: any) => {
 
     const viewName = deriveViewName(slug);
     const canonicalUrl = `${origin}${buildCanonicalPath(pathname, slug)}`;
-    const title = viewName ? `Top ${viewName} Investors | Spacecadet` : "Top Investors | Spacecadet";
+    // Fetch count from API for SSR meta if possible
+    let count: number | undefined = undefined;
+    if (viewName) {
+      const base = (globalThis as any).Deno?.env?.get("AIRTABLE_BASE") || "";
+      const table = (globalThis as any).Deno?.env?.get("AIRTABLE_TABLE") || "";
+      if (base && table) {
+        const listUrl = `${origin}/.netlify/functions/list-records?base=${encodeURIComponent(base)}&table=${encodeURIComponent(table)}&view=${encodeURIComponent(viewName)}`;
+        const ac = new AbortController();
+        const timeoutId = setTimeout(() => ac.abort(), 3000);
+        try {
+          const resp = await fetch(listUrl, { signal: ac.signal, headers: { accept: "application/json" } });
+          if (resp.ok) {
+            const j = await resp.json();
+            if (j && Array.isArray(j.records)) count = j.records.length;
+          }
+        } catch (_e) {
+          // ignore and fall back
+        } finally {
+          clearTimeout(timeoutId);
+        }
+      }
+    }
+    const lowerView = viewName ? String(viewName).toLowerCase() : "";
+    const titleBase = viewName ? (count != null ? `Top ${count} ${lowerView} investors` : `Top ${lowerView} investors`) : "Top investors";
+    const title = `${titleBase} - Spacecadet`;
     const description = viewName
       ? `Curated list of ${viewName} investors who lead rounds. Export to Google Sheets.`
       : `Curated lists of top investors by category. Export to Google Sheets.`;
@@ -49,8 +73,7 @@ export default async (request: Request, context: any) => {
         element(el) {
           try {
             if (viewName) {
-              // No number here; client will fill the accurate count after data loads
-              el.setInnerContent(`Top ${viewName} Investors`);
+              el.setInnerContent(count != null ? `Top ${count} ${viewName} Investors` : `Top ${viewName} Investors`);
             }
           } catch {}
         },
