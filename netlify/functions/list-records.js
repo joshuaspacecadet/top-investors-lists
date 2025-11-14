@@ -39,6 +39,11 @@ export const handler = async (event) => {
       };
     });
 
+    // Sort alphabetically by Contact Name (case-insensitive)
+    shaped.sort((a, b) =>
+      String(a.contactName || "").localeCompare(String(b.contactName || ""), undefined, { sensitivity: "base" })
+    );
+
     // ETag + CDN/browser caching
     const body = JSON.stringify({ records: shaped });
     const etag = crypto.createHash("sha1").update(body).digest("hex");
