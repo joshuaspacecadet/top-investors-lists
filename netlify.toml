@@ -6,6 +6,10 @@
   path = "/resources/top-investor-lists/*"
   function = "seo"
 
+[[edge_functions]]
+  path = "/*"
+  function = "seo"
+
 [[headers]]
   for = "/*"
   [headers.values]
