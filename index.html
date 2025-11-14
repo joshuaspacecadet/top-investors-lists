@@ -337,6 +337,20 @@
           .map(w => w ? (w[0].toUpperCase() + w.slice(1)) : w)
           .join(" ");
       }
+      // Prefer hyphenation for "Pre-Seed" when constructing a display name from a slug
+      function preferHyphenatedPreSeed(slug) {
+        const parts = String(slug || "").split("-").filter(Boolean);
+        if (parts.length >= 2) {
+          const last = parts[parts.length - 1].toLowerCase();
+          const secondLast = parts[parts.length - 2].toLowerCase();
+          if (secondLast === "pre" && last === "seed") {
+            const head = parts.slice(0, -2).map(p => p ? (p[0].toUpperCase() + p.slice(1)) : p).join(" ");
+            const tail = "Pre-Seed";
+            return head ? `${head} ${tail}` : tail;
+          }
+        }
+        return titleizeFromSlug(slug);
+      }
       function generateViewCandidates(input) {
         const raw = String(input || "").trim();
         const slug = slugifyViewName(raw);
@@ -360,7 +374,13 @@
         if (raw) candidates.push(raw);
         const allSpaced = tokens.join(" ");
         const allHyphen = tokens.join("-");
-        candidates.push(allSpaced, allHyphen);
+        // Prefer last-two hyphen (e.g., "Pre-Seed") first, then others
+        if (tokens.length >= 2 && tokens[tokens.length - 2] === "pre" && tokens[tokens.length - 1] === "seed") {
+          const head = tokens.slice(0, -2).join(" ");
+          const tailHyphen = tokens.slice(-2).join("-");
+          candidates.push([head, tailHyphen].filter(Boolean).join(" "));
+        }
+        candidates.push(allHyphen, allSpaced);
 
         // 3) Mixed: last-two hyphen, others spaced (handles "Pre-Seed")
         if (tokens.length >= 3) {
@@ -370,8 +390,8 @@
         }
 
         // 4) Title case variants
-        candidates.push(titleCaseSpaced(allSpaced));
         candidates.push(titleCaseHyphenated(allHyphen));
+        candidates.push(titleCaseSpaced(allSpaced));
         if (tokens.length >= 3) {
           const head = tokens.slice(0, -2).join(" ");
           const tail = tokens.slice(-2).join("-");
@@ -541,7 +561,7 @@
         const slug = getSlugFromPath();
         let viewNameFromUrl = null;
         if (slug) {
-          viewNameFromUrl = VIEW_SLUG_TO_NAME[slug] || titleizeFromSlug(slug);
+          viewNameFromUrl = VIEW_SLUG_TO_NAME[slug] || preferHyphenatedPreSeed(slug);
         }
         if (viewNameFromUrl) {
           document.body.dataset.view = viewNameFromUrl;
@@ -564,7 +584,7 @@
       window.addEventListener("popstate", () => {
         const slug = getSlugFromPath();
         if (!slug) return;
-        const viewName = VIEW_SLUG_TO_NAME[slug] || titleizeFromSlug(slug);
+        const viewName = VIEW_SLUG_TO_NAME[slug] || preferHyphenatedPreSeed(slug);
         if (viewName) {
           document.body.dataset.view = viewName;
           updateHero(viewName);
