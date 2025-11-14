@@ -398,6 +398,14 @@
         const path = window.location.pathname;
         const match = path.match(/\/resources\/top-investor-lists\/([^\/?#]+)/i);
         if (match && match[1]) return decodeURIComponent(match[1]);
+        // fallback: support ?v=<slug> or #v=<slug> for iframe-based prerender shells
+        const search = new URLSearchParams(window.location.search);
+        const vParam = search.get('v');
+        if (vParam) return decodeURIComponent(vParam);
+        if (window.location.hash) {
+          const hash = window.location.hash.replace(/^#\/?/, '');
+          if (hash) return decodeURIComponent(hash);
+        }
         const parts = path.replace(/\/+$/,"").split("/");
         const tail = parts[parts.length - 1];
         if (tail && tail !== "" && tail !== "index.html") return decodeURIComponent(tail);
