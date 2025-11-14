@@ -33,6 +33,17 @@ export default async (request: Request, context: any) => {
           } catch {}
         },
       })
+      // Normalize/overwrite existing OpenGraph/Twitter/canonical tags if present
+      .on('meta[property="og:type"]', { element(el) { try { el.setAttribute("content", "website"); } catch {} } })
+      .on('meta[property="og:title"]', { element(el) { try { el.setAttribute("content", title); } catch {} } })
+      .on('meta[property="og:description"]', { element(el) { try { el.setAttribute("content", description); } catch {} } })
+      .on('meta[property="og:url"]', { element(el) { try { el.setAttribute("content", canonicalUrl); } catch {} } })
+      .on('meta[property="og:image"]', { element(el) { try { el.setAttribute("content", image); } catch {} } })
+      .on('meta[name="twitter:card"]', { element(el) { try { el.setAttribute("content", "summary_large_image"); } catch {} } })
+      .on('meta[name="twitter:title"]', { element(el) { try { el.setAttribute("content", title); } catch {} } })
+      .on('meta[name="twitter:description"]', { element(el) { try { el.setAttribute("content", description); } catch {} } })
+      .on('meta[name="twitter:image"]', { element(el) { try { el.setAttribute("content", image); } catch {} } })
+      .on('link[rel="canonical"]', { element(el) { try { el.setAttribute("href", canonicalUrl); } catch {} } })
       // Hero headline and copy (server-side update to avoid default flash)
     .on("h1.hero-headline", {
         element(el) {
