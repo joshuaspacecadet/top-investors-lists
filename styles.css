@@ -262,17 +262,22 @@ h1 {
   max-width: 80ch;
 }
 .hero-subcopy .hero-cta-link {
-  display: inline-block;          /* forces new line via <br> and keeps spacing tidy */
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
   margin-top: 8px;
   text-transform: uppercase;
   letter-spacing: 0.8px;
   font-weight: 700;
   font-size: 15.5px;
-  color: #ffffff;
+  color: #d4d4d4;
   text-decoration: none;
 }
 .hero-subcopy .hero-cta-link:hover {
   color: var(--brand-orange);
+}
+.hero-subcopy .hero-cta-link:hover .icon-circle {
+  background: var(--brand-orange);
 }
 .hero-image {
   width: 100%;
