@@ -261,6 +261,19 @@ h1 {
   text-align: left;
   max-width: 80ch;
 }
+.hero-subcopy .hero-cta-link {
+  display: inline-block;          /* forces new line via <br> and keeps spacing tidy */
+  margin-top: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  font-weight: 700;
+  font-size: 15.5px;
+  color: #ffffff;
+  text-decoration: none;
+}
+.hero-subcopy .hero-cta-link:hover {
+  color: var(--brand-orange);
+}
 .hero-image {
   width: 100%;
   height: 100%;
