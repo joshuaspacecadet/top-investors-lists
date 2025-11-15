@@ -25,3 +25,9 @@
   from = "/sitemap.xml"
   to = "/.netlify/functions/sitemap"
   status = 200
+
+# Serve favicon from favicons.ico if that's the file present
+[[redirects]]
+  from = "/favicon.ico"
+  to = "/favicons.ico"
+  status = 200
