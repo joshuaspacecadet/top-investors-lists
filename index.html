@@ -539,12 +539,22 @@
         const headline = document.querySelector('.hero-headline');
         const copy = document.querySelector('.hero-copy');
         const heroImg = document.querySelector('.hero-image img');
+        const heroContent = document.querySelector('.hero-content');
         if (headline && viewName) {
           const n = typeof count === "number" && count >= 0 ? count : null;
           headline.textContent = n != null ? `Top ${n} ${viewName} Investors` : `Top ${viewName} Investors`;
         }
-        if (copy && viewName) {
-          copy.textContent = `Identifying appropriate investors is hard. Here's a curated list of ${viewName} investors (in alphabetical order) who actually lead rounds.`;
+        if (copy) {
+          copy.textContent = `Identifying appropriate investors is hard. Here's a curated list of Seed investors (in alphabetical order) we that are actively writing checks.`;
+          if (heroContent) {
+            let sub = heroContent.querySelector('.hero-subcopy');
+            if (!sub) {
+              sub = document.createElement('p');
+              sub.className = 'hero-subcopy';
+              heroContent.appendChild(sub);
+            }
+            sub.innerHTML = `We'd love to learn about what you're building too. <a href="https://spacecadet.ventures/" target="_blank" rel="noopener">Click here to jump to Spacecadet.</a>`;
+          }
         }
         if (heroImg && viewName) {
           heroImg.src = `/Assets/${encodeURIComponent(viewName)}.png`;
