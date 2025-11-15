@@ -38,7 +38,7 @@ export const handler = async (event) => {
     const title = `Top ${count} ${viewName} Investors - Spacecadet`;
     const desc = `Curated list of ${viewName} investors who lead rounds. Export to Google Sheets.`;
     const canonical = `${origin}/resources/top-investor-lists/${slug}`;
-    const image = `${origin}/Assets/handshake.jpg`;
+    const image = `${origin}/Assets/${encodeURIComponent(viewName)}.png`;
 
     const html = `<!doctype html>
 <html>

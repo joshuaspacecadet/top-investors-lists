@@ -502,7 +502,7 @@
           ? `Top ${count} ${lowerView} investors`
           : `Top ${lowerView} investors`;
         const description = `Curated list of ${viewName} investors who lead rounds. Export to Google Sheets.`;
-        const image = `${window.location.origin}/Assets/handshake.jpg`;
+        const image = `${window.location.origin}/Assets/${encodeURIComponent(viewName)}.png`;
 
         document.title = title;
         ensureMetaByName("description", description);
@@ -538,12 +538,17 @@
       function updateHero(viewName, count) {
         const headline = document.querySelector('.hero-headline');
         const copy = document.querySelector('.hero-copy');
+        const heroImg = document.querySelector('.hero-image img');
         if (headline && viewName) {
           const n = typeof count === "number" && count >= 0 ? count : null;
           headline.textContent = n != null ? `Top ${n} ${viewName} Investors` : `Top ${viewName} Investors`;
         }
         if (copy && viewName) {
           copy.textContent = `Identifying appropriate investors is hard. Here's a curated list of ${viewName} investors (in alphabetical order) who actually lead rounds.`;
+        }
+        if (heroImg && viewName) {
+          heroImg.src = `/Assets/${encodeURIComponent(viewName)}.png`;
+          heroImg.alt = `${viewName} image`;
         }
         // Re-run sizing for the headline after text change
         if (typeof requestAnimationFrame !== "undefined") {
