@@ -326,11 +326,23 @@
       const VIEW_SLUG_TO_NAME = {
         "seed": "Seed",
         "pre-seed": "Pre-Seed",
-        "aerospace": "Aerospace Seed",
-        "ai": "AI Seed",
-        "biotech": "Biotech Seed",
-        "energy": "Energy Seed",
-        "robotics": "Robotics Seed"
+        "aerospace": "Aerospace",
+        "ai": "AI",
+        "biotech": "Biotech",
+        "energy": "Energy",
+        "robotics": "Robotics",
+        // Legacy compat:
+        "aerospace-seed": "Aerospace",
+        "ai-seed": "AI",
+        "bio-seed": "Biotech",
+        "energy-seed": "Energy",
+        "robotics-seed": "Robotics",
+        "aerospace-pre-seed": "Pre-Seed",
+        "ai-pre-seed": "Pre-Seed",
+        "bio-pre-seed": "Pre-Seed",
+        "health-pre-seed": "Pre-Seed",
+        "energy-pre-seed": "Pre-Seed",
+        "robotics-pre-seed": "Pre-Seed"
       };
       const DEFAULT_VIEW_NAME = "Aerospace Seed"; // fallback when initial data-view is an ID and no slug present
       function slugifyViewName(name) {
@@ -513,9 +525,13 @@
           ? `Top ${count} ${lowerView} investors`
           : `Top ${lowerView} investors`;
         const description = `Curated list of ${viewName} investors who lead rounds. Export to Google Sheets.`;
-        const slugForImg = slugifyViewName(viewName);
-        const imgBase = slugForImg === "seed" ? "Seed" : (slugForImg === "pre-seed" ? "Pre-Seed" : `${viewName} Seed`);
-        const image = `${window.location.origin}/Assets/${encodeURIComponent(imgBase)}.png`;
+        const pathSlug = getSlugFromPath() || slugifyViewName(viewName);
+        const allowed = new Set(["seed","pre-seed","aerospace","ai","biotech","energy","robotics"]);
+        let imageSlug = String(pathSlug || "").toLowerCase();
+        if (/-pre-seed$/.test(imageSlug)) imageSlug = "pre-seed";
+        if (/-seed$/.test(imageSlug)) imageSlug = imageSlug.replace(/-seed$/, "");
+        if (!allowed.has(imageSlug)) imageSlug = "seed";
+        const image = `${window.location.origin}/Assets/${encodeURIComponent(imageSlug)}.png`;
 
         document.title = title;
         ensureMetaByName("description", description);
@@ -571,9 +587,13 @@
         }
         if (heroImg) {
           const slug = getSlugFromPath();
+          const allowed = new Set(["seed","pre-seed","aerospace","ai","biotech","energy","robotics"]);
+          let imageSlug = String(slug || "").toLowerCase();
+          if (/-pre-seed$/.test(imageSlug)) imageSlug = "pre-seed";
+          if (/-seed$/.test(imageSlug)) imageSlug = imageSlug.replace(/-seed$/, "");
+          if (!allowed.has(imageSlug)) imageSlug = "seed";
+          heroImg.src = `/Assets/${encodeURIComponent(imageSlug)}.png`;
           const display = preferHyphenatedPreSeed(slug || viewName || "");
-          const imgBase = slug === "seed" ? "Seed" : (slug === "pre-seed" ? "Pre-Seed" : `${display} Seed`);
-          heroImg.src = `/Assets/${encodeURIComponent(imgBase)}.png`;
           heroImg.alt = `${display} image`;
         }
         // Re-run sizing for the headline after text change

@@ -1,26 +1,26 @@
 import crypto from "crypto";
 
 const SLUG_TO_VIEW = {
-  "aerospace-seed": "Aerospace Seed",
-  "ai-seed": "AI Seed",
-  "bio-seed": "Bio Seed",
-  "health-seed": "Health Seed",
-  "energy-seed": "Energy Seed",
-  "robotics-seed": "Robotics Seed",
-  "aerospace-pre-seed": "Aerospace Pre-Seed",
-  "ai-pre-seed": "AI Pre-Seed",
-  "bio-pre-seed": "Bio Pre-Seed",
-  "health-pre-seed": "Health Pre-Seed",
-  "energy-pre-seed": "Energy Pre-Seed",
-  "robotics-pre-seed": "Robotics Pre-Seed",
+  // Canonical slugs → Airtable view names (no "Seed" suffix)
   "seed": "Seed",
   "pre-seed": "Pre-Seed",
-  // New slugs without "Seed" suffix
-  "aerospace": "Aerospace Seed",
-  "ai": "AI Seed",
-  "biotech": "Biotech Seed",
-  "energy": "Energy Seed",
-  "robotics": "Robotics Seed",
+  "aerospace": "Aerospace",
+  "ai": "AI",
+  "biotech": "Biotech",
+  "energy": "Energy",
+  "robotics": "Robotics",
+  // Back-compat legacy slugs → canonical views
+  "aerospace-seed": "Aerospace",
+  "ai-seed": "AI",
+  "bio-seed": "Biotech",
+  "energy-seed": "Energy",
+  "robotics-seed": "Robotics",
+  "aerospace-pre-seed": "Pre-Seed",
+  "ai-pre-seed": "Pre-Seed",
+  "bio-pre-seed": "Pre-Seed",
+  "health-pre-seed": "Pre-Seed",
+  "energy-pre-seed": "Pre-Seed",
+  "robotics-pre-seed": "Pre-Seed",
 };
 
 export const handler = async (event) => {
@@ -45,8 +45,13 @@ export const handler = async (event) => {
     const title = `Top ${count} ${displayName} Investors - Spacecadet`;
     const desc = `Curated list of ${displayName} investors who lead rounds. Export to Google Sheets.`;
     const canonical = `${origin}/resources/top-investor-lists/${slug}`;
-    const imgBase = (slug === 'seed') ? 'Seed' : (slug === 'pre-seed') ? 'Pre-Seed' : `${displayName} Seed`;
-    const image = `${origin}/Assets/${encodeURIComponent(imgBase)}.png`;
+    // Per-slug image filenames: seed.png, pre-seed.png, ai.png, aerospace.png, biotech.png, energy.png, robotics.png
+    const allowed = new Set(["seed","pre-seed","aerospace","ai","biotech","energy","robotics"]);
+    let imageSlug = String(slug || "").toLowerCase();
+    if (/-pre-seed$/.test(imageSlug)) imageSlug = "pre-seed";
+    if (/-seed$/.test(imageSlug)) imageSlug = imageSlug.replace(/-seed$/, "");
+    if (!allowed.has(imageSlug)) imageSlug = "seed";
+    const image = `${origin}/Assets/${encodeURIComponent(imageSlug)}.png`;
 
     const html = `<!doctype html>
 <html>

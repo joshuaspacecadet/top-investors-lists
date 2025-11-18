@@ -44,8 +44,13 @@ export default async (request: Request, context: any) => {
     const description = viewName
       ? `Curated list of ${viewName} investors who lead rounds. Export to Google Sheets.`
       : `Curated lists of top investors by category. Export to Google Sheets.`;
-    const imgBase = slug === "seed" ? "Seed" : (slug === "pre-seed" ? "Pre-Seed" : `${displayName} Seed`);
-    const image = `${origin}/Assets/${encodeURIComponent(imgBase)}.png`;
+    // Per-slug image filenames
+    const allowed = new Set(["seed","pre-seed","aerospace","ai","biotech","energy","robotics"]);
+    let imageSlug = String(slug || "").toLowerCase();
+    if (/-pre-seed$/.test(imageSlug)) imageSlug = "pre-seed";
+    if (/-seed$/.test(imageSlug)) imageSlug = imageSlug.replace(/-seed$/, "");
+    if (!allowed.has(imageSlug)) imageSlug = "seed";
+    const image = `${origin}/Assets/${encodeURIComponent(imageSlug)}.png`;
 
     const response = await context.next();
 
@@ -196,17 +201,34 @@ function escapeHtml(s: string): string {
 }
 
 function mapSlugToView(slug: string): string | undefined {
+  const clean = String(slug || "").toLowerCase();
+  // Canonical slugs
   const map: Record<string, string> = {
     "seed": "Seed",
     "pre-seed": "Pre-Seed",
-    "aerospace": "Aerospace Seed",
-    "ai": "AI Seed",
-    "biotech": "Biotech Seed",
-    "energy": "Energy Seed",
-    "robotics": "Robotics Seed",
+    "aerospace": "Aerospace",
+    "ai": "AI",
+    "biotech": "Biotech",
+    "energy": "Energy",
+    "robotics": "Robotics",
   };
-  const clean = String(slug || "").toLowerCase();
-  return map[clean];
+  if (map[clean]) return map[clean];
+  // Legacy "-pre-seed" slugs → Pre-Seed
+  if (/-pre-seed$/.test(clean)) return "Pre-Seed";
+  // Legacy "-seed" slugs → base view without "Seed"
+  if (/-seed$/.test(clean)) {
+    const base = clean.replace(/-seed$/, "");
+    const baseMap: Record<string, string> = {
+      "aerospace": "Aerospace",
+      "ai": "AI",
+      "bio": "Biotech",
+      "biotech": "Biotech",
+      "energy": "Energy",
+      "robotics": "Robotics",
+    };
+    return baseMap[base];
+  }
+  return undefined;
 }
 
 
