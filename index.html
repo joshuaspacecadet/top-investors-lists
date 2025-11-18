@@ -513,7 +513,9 @@
           ? `Top ${count} ${lowerView} investors`
           : `Top ${lowerView} investors`;
         const description = `Curated list of ${viewName} investors who lead rounds. Export to Google Sheets.`;
-        const image = `${window.location.origin}/Assets/${encodeURIComponent(viewName)}.png`;
+        const slugForImg = slugifyViewName(viewName);
+        const imgBase = slugForImg === "seed" ? "Seed" : (slugForImg === "pre-seed" ? "Pre-Seed" : `${viewName} Seed`);
+        const image = `${window.location.origin}/Assets/${encodeURIComponent(imgBase)}.png`;
 
         document.title = title;
         ensureMetaByName("description", description);
@@ -567,9 +569,12 @@
             sub.textContent = `We'd love to learn about what you're building too.`;
           }
         }
-        if (heroImg && viewName) {
-          heroImg.src = `/Assets/${encodeURIComponent(viewName)}.png`;
-          heroImg.alt = `${viewName} image`;
+        if (heroImg) {
+          const slug = getSlugFromPath();
+          const display = preferHyphenatedPreSeed(slug || viewName || "");
+          const imgBase = slug === "seed" ? "Seed" : (slug === "pre-seed" ? "Pre-Seed" : `${display} Seed`);
+          heroImg.src = `/Assets/${encodeURIComponent(imgBase)}.png`;
+          heroImg.alt = `${display} image`;
         }
         // Re-run sizing for the headline after text change
         if (typeof requestAnimationFrame !== "undefined") {

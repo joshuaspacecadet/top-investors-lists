@@ -44,7 +44,8 @@ export default async (request: Request, context: any) => {
     const description = viewName
       ? `Curated list of ${viewName} investors who lead rounds. Export to Google Sheets.`
       : `Curated lists of top investors by category. Export to Google Sheets.`;
-    const image = viewName ? `${origin}/Assets/${encodeURIComponent(viewName)}.png` : `${origin}/Assets/handshake.jpg`;
+    const imgBase = slug === "seed" ? "Seed" : (slug === "pre-seed" ? "Pre-Seed" : `${displayName} Seed`);
+    const image = `${origin}/Assets/${encodeURIComponent(imgBase)}.png`;
 
     const response = await context.next();
 

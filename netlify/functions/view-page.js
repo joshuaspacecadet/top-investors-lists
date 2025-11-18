@@ -45,7 +45,8 @@ export const handler = async (event) => {
     const title = `Top ${count} ${displayName} Investors - Spacecadet`;
     const desc = `Curated list of ${displayName} investors who lead rounds. Export to Google Sheets.`;
     const canonical = `${origin}/resources/top-investor-lists/${slug}`;
-    const image = `${origin}/Assets/${encodeURIComponent(viewName)}.png`;
+    const imgBase = (slug === 'seed') ? 'Seed' : (slug === 'pre-seed') ? 'Pre-Seed' : `${displayName} Seed`;
+    const image = `${origin}/Assets/${encodeURIComponent(imgBase)}.png`;
 
     const html = `<!doctype html>
 <html>
