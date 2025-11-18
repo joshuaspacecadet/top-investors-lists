@@ -289,8 +289,9 @@
         const cached = readCache(cacheKey);
         if (cached && Array.isArray(cached.records) && cached.records.length) {
           renderRecords(container, cached.records);
-          updateHero(view, cached.records.length);
-          updateSEO(view, cached.records.length);
+          const display = document.body.dataset.display || view;
+          updateHero(display, cached.records.length);
+          updateSEO(display, cached.records.length);
         }
         try {
           const { records: fresh, usedView } = await fetchRecordsWithCandidates({ base, table, view });
@@ -298,11 +299,13 @@
             document.body.dataset.view = usedView;
             updateUrlForViewName(usedView);
             view = usedView;
-            updateHero(usedView, fresh.length);
-            updateSEO(usedView, fresh.length);
+            const display = document.body.dataset.display || preferHyphenatedPreSeed(getSlugFromPath() || usedView);
+            updateHero(display, fresh.length);
+            updateSEO(display, fresh.length);
           } else {
-            updateHero(view, fresh.length);
-            updateSEO(view, fresh.length);
+            const display = document.body.dataset.display || preferHyphenatedPreSeed(getSlugFromPath() || view);
+            updateHero(display, fresh.length);
+            updateSEO(display, fresh.length);
           }
           const newCacheKey = getCacheKey(base, table, view);
           const currentCached = readCache(newCacheKey);
@@ -321,8 +324,13 @@
 
       // ----- Route <-> View mapping helpers -----
       const VIEW_SLUG_TO_NAME = {
-        "aerospace-seed": "Aerospace Seed",
-        "robotics-pre-seed": "Robotics Pre-Seed"
+        "seed": "Seed",
+        "pre-seed": "Pre-Seed",
+        "aerospace": "Aerospace Seed",
+        "ai": "AI Seed",
+        "bio": "Bio Seed",
+        "energy": "Energy Seed",
+        "robotics": "Robotics Seed"
       };
       const DEFAULT_VIEW_NAME = "Aerospace Seed"; // fallback when initial data-view is an ID and no slug present
       function slugifyViewName(name) {
@@ -583,9 +591,11 @@
         }
         if (viewNameFromUrl) {
           document.body.dataset.view = viewNameFromUrl;
-          updateUrlForViewName(viewNameFromUrl);
-          updateHero(viewNameFromUrl);
-          updateSEO(viewNameFromUrl);
+          const display = preferHyphenatedPreSeed(slug || viewNameFromUrl);
+          document.body.dataset.display = display;
+          updateUrlForViewName(display);
+          updateHero(display);
+          updateSEO(display);
           HAS_VIEW = true;
         } else {
           const main = document.getElementById("main");
@@ -602,11 +612,13 @@
       window.addEventListener("popstate", () => {
         const slug = getSlugFromPath();
         if (!slug) return;
-        const viewName = VIEW_SLUG_TO_NAME[slug] || preferHyphenatedPreSeed(slug);
+        const viewName = VIEW_SLUG_TO_NAME[slug];
         if (viewName) {
           document.body.dataset.view = viewName;
-          updateHero(viewName);
-          updateSEO(viewName);
+          const display = preferHyphenatedPreSeed(slug);
+          document.body.dataset.display = display;
+          updateHero(display);
+          updateSEO(display);
           const main = document.getElementById("main");
           if (main) main.style.display = "";
           HAS_VIEW = true;

@@ -15,6 +15,12 @@ const SLUG_TO_VIEW = {
   "robotics-pre-seed": "Robotics Pre-Seed",
   "seed": "Seed",
   "pre-seed": "Pre-Seed",
+  // New slugs without "Seed" suffix
+  "aerospace": "Aerospace Seed",
+  "ai": "AI Seed",
+  "bio": "Bio Seed",
+  "energy": "Energy Seed",
+  "robotics": "Robotics Seed",
 };
 
 export const handler = async (event) => {
@@ -35,8 +41,9 @@ export const handler = async (event) => {
     const json = await resp.json();
     const count = Array.isArray(json.records) ? json.records.length : 0;
 
-    const title = `Top ${count} ${viewName} Investors - Spacecadet`;
-    const desc = `Curated list of ${viewName} investors who lead rounds. Export to Google Sheets.`;
+    const displayName = displayNameFromSlug(slug);
+    const title = `Top ${count} ${displayName} Investors - Spacecadet`;
+    const desc = `Curated list of ${displayName} investors who lead rounds. Export to Google Sheets.`;
     const canonical = `${origin}/resources/top-investor-lists/${slug}`;
     const image = `${origin}/Assets/${encodeURIComponent(viewName)}.png`;
 

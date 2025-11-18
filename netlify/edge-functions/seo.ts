@@ -11,7 +11,7 @@ export default async (request: Request, context: any) => {
     const slugMatch = pathname.match(/\/resources\/top-investor-lists\/([^\/?#]+)/i);
     const slug = slugMatch && slugMatch[1] ? decodeURIComponent(slugMatch[1]) : "";
 
-    const viewName = deriveViewName(slug);
+    const viewName = mapSlugToView(slug) || deriveViewName(slug);
     const canonicalUrl = `${origin}${buildCanonicalPath(pathname, slug)}`;
     // Fetch count from API for SSR meta if possible
     let count: number | undefined = undefined;
@@ -38,7 +38,8 @@ export default async (request: Request, context: any) => {
         }
       }
     }
-    const titleBase = viewName ? (count != null ? `Top ${count} ${viewName} Investors` : `Top ${viewName} Investors`) : "Top Investors";
+    const displayName = titleize(slug.replace(/-/g, " "));
+    const titleBase = viewName ? (count != null ? `Top ${count} ${displayName} Investors` : `Top ${displayName} Investors`) : "Top Investors";
     const title = `${titleBase} - Spacecadet`;
     const description = viewName
       ? `Curated list of ${viewName} investors who lead rounds. Export to Google Sheets.`
@@ -79,7 +80,7 @@ export default async (request: Request, context: any) => {
         element(el) {
           try {
             if (viewName) {
-              el.setInnerContent(count != null ? `Top ${count} ${viewName} Investors` : `Top ${viewName} Investors`);
+              el.setInnerContent(count != null ? `Top ${count} ${displayName} Investors` : `Top ${displayName} Investors`);
             }
           } catch {}
         },
@@ -169,6 +170,14 @@ function titleCase(s: string): string {
   return s.replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
+function titleize(s: string): string {
+  return String(s || "")
+    .trim()
+    .split(/\s+/)
+    .map((w) => (w ? w[0].toUpperCase() + w.slice(1) : w))
+    .join(" ");
+}
+
 function buildCanonicalPath(pathname: string, slug: string): string {
   const baseMatch = pathname.match(/^(.*\/resources\/top-investor-lists)\/?/i);
   const base = baseMatch ? baseMatch[1] : "/resources/top-investor-lists";
@@ -183,6 +192,20 @@ function escapeHtml(s: string): string {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
+}
+
+function mapSlugToView(slug: string): string | undefined {
+  const map: Record<string, string> = {
+    "seed": "Seed",
+    "pre-seed": "Pre-Seed",
+    "aerospace": "Aerospace Seed",
+    "ai": "AI Seed",
+    "bio": "Bio Seed",
+    "energy": "Energy Seed",
+    "robotics": "Robotics Seed",
+  };
+  const clean = String(slug || "").toLowerCase();
+  return map[clean];
 }
 
 

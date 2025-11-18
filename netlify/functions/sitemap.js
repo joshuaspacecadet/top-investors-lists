@@ -1,25 +1,7 @@
 export const handler = async () => {
   const origin = process.env.SITE_ORIGIN || 'https://top-investors-lists.netlify.app';
-  const VIEWS = [
-    "Aerospace Seed",
-    "AI Seed",
-    "Bio Seed",
-    "Health Seed",
-    "Energy Seed",
-    "Robotics Seed",
-    "Aerospace Pre-Seed",
-    "AI Pre-Seed",
-    "Bio Pre-Seed",
-    "Health Pre-Seed",
-    "Energy Pre-Seed",
-    "Robotics Pre-Seed",
-    "Seed",
-    "Pre-Seed"
-  ];
-  const slugify = (name) =>
-    name.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-');
-
-  const urls = VIEWS.map(v => `${origin}/resources/top-investor-lists/${slugify(v)}`);
+  const SLUGS = ["seed","pre-seed","aerospace","ai","bio","energy","robotics"];
+  const urls = SLUGS.map(s => `${origin}/resources/top-investor-lists/${s}`);
   const lastmod = new Date().toISOString();
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
