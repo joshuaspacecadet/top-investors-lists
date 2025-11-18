@@ -18,7 +18,7 @@ const SLUG_TO_VIEW = {
   // New slugs without "Seed" suffix
   "aerospace": "Aerospace Seed",
   "ai": "AI Seed",
-  "bio": "Bio Seed",
+  "biotech": "Biotech Seed",
   "energy": "Energy Seed",
   "robotics": "Robotics Seed",
 };

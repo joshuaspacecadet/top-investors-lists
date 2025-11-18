@@ -200,7 +200,7 @@ function mapSlugToView(slug: string): string | undefined {
     "pre-seed": "Pre-Seed",
     "aerospace": "Aerospace Seed",
     "ai": "AI Seed",
-    "bio": "Bio Seed",
+    "biotech": "Biotech Seed",
     "energy": "Energy Seed",
     "robotics": "Robotics Seed",
   };

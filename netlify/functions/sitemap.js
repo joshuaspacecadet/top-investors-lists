@@ -1,6 +1,6 @@
 export const handler = async () => {
   const origin = process.env.SITE_ORIGIN || 'https://top-investors-lists.netlify.app';
-  const SLUGS = ["seed","pre-seed","aerospace","ai","bio","energy","robotics"];
+  const SLUGS = ["seed","pre-seed","aerospace","ai","biotech","energy","robotics"];
   const urls = SLUGS.map(s => `${origin}/resources/top-investor-lists/${s}`);
   const lastmod = new Date().toISOString();
 
